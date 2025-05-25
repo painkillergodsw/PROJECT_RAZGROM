@@ -3,7 +3,7 @@ import jwt
 from jwt import ExpiredSignatureError
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
-from config import config
+from app.services.auth_service.config import config
 from datetime import datetime, timedelta
 from uuid import uuid4
 from app.services.auth_service.exeptions import (

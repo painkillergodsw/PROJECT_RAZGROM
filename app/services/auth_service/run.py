@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from app.services.auth_service.views import router
 from contextlib import asynccontextmanager
 from app.services.auth_service.models import Role
-from services.auth_service.schemas import RoleSchema
 from app.db.db import async_session_maker
 
 

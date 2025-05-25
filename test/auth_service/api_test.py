@@ -18,3 +18,7 @@ async def test_registrate():
                 "password1": "290704ilya",
             },
         )
+
+
+@pytest.mark.asyncio
+async def test_2(): ...

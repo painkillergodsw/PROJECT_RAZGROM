@@ -1,0 +1,10 @@
+from pydantic import BaseModel
+
+from app.db.managers import BaseManager
+
+
+class UserManager(BaseManager):
+
+    @BaseManager.commit_or_rollback(refresh=True)
+    def add(self, instance: BaseModel | dict):
+        return super().add(instance)

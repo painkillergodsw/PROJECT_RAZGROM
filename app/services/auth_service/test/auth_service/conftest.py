@@ -61,10 +61,3 @@ async def override_db_session():
 
     app.dependency_overrides[get_session] = override_get_session
     yield
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()

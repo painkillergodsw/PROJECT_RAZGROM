@@ -22,3 +22,4 @@ async def test_registrate():
 
 @pytest.mark.asyncio
 async def test_2(): ...
+*

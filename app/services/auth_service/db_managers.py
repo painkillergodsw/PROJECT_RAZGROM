@@ -15,3 +15,10 @@ class RoleManager(BaseManager):
     @BaseManager.commit_or_rollback()
     def add(self, instance: BaseModel | dict):
         return super().add(instance)
+
+
+class JWTBlackListManager(BaseManager):
+
+    @BaseManager.commit_or_rollback()
+    def add(self, instance: BaseModel | dict):
+        return super().add(instance)

@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timezone, UTC
 import jwt
 from jwt import ExpiredSignatureError
 from passlib.context import CryptContext
@@ -10,6 +10,7 @@ from app.services.auth_service.exeptions import (
     TokenExpiredException,
     UserNotExistsException,
     UserAlreadyLogout,
+    WrongTokenException,
 )
 from app.services.auth_service.models import User
 from app.services.auth_service.models import JWTBlackList
@@ -28,10 +29,9 @@ def check_password(plain_pwd, hashed_pwd) -> bool:
 def create_access_token(
     payload: dict,
 ) -> str:
-    now = datetime.utcnow()
-    expire = now + timedelta(minutes=config.jwt.access_token_lifetime_minutes)
-    payload.update(exp=expire, iat=now, type="access", jti=str(uuid4()))
 
+    tech_info = get_tech_info("access")
+    payload.update(tech_info)
     encoded = create_token(payload)
 
     return encoded
@@ -45,11 +45,21 @@ def create_token(payload):
     )
 
 
-def create_refresh_token(payload: dict):
-    now = datetime.utcnow()
-    expire = now + timedelta(hours=config.jwt.refresh_token_lifetime_hour)
-    payload.update(exp=expire, iat=now, type="access", jti=str(uuid4()))
+def get_tech_info(t_type: str):
 
+    if t_type not in ("refresh", "access"):
+        raise AttributeError("Wrong type")
+
+    now = datetime.now(UTC)
+    expire = now + timedelta(hours=config.jwt.refresh_token_lifetime_hour)
+
+    return {"exp": expire, "iat": now, "type": t_type, "jti": str(uuid4())}
+
+
+def create_refresh_token(payload: dict):
+
+    tech_info = get_tech_info("refresh")
+    payload.update(tech_info)
     encoded = create_token(payload)
 
     return encoded
@@ -75,7 +85,11 @@ async def validate_token(token: str, session: AsyncSession) -> dict:
     user_id = payload.get("sub")
     exp = payload.get("exp")
     jti = payload.get("jti")
+    t = payload.get("type")
     exp_time = datetime.fromtimestamp(int(exp), tz=timezone.utc)
+
+    if not t or not jti or not user_id:
+        raise WrongTokenException
 
     if (not exp) or (exp_time < datetime.now(timezone.utc)):
         raise TokenExpiredException

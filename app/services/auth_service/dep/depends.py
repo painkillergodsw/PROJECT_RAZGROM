@@ -6,6 +6,7 @@ from app.services.auth_service.exeptions import (
     UnAuthException,
     TokenExpiredException,
     UserNotExistsException,
+    WrongTokenException,
 )
 from app.services.auth_service.schemas import (
     LoginUser,
@@ -38,21 +39,16 @@ async def get_tokens_for_logout(
     )
 
 
-def check_refresh_token(refresh_token: RefreshTokenSchema = Body()):
-    payload = decode(refresh_token.refresh_token)
-    user_id = payload.get("sub")
-    exp = payload.get("exp")
-    exp_time = datetime.datetime.fromtimestamp(int(exp), tz=datetime.timezone.utc)
-    if (not exp) or (exp_time < datetime.datetime.now(datetime.timezone.utc)):
-        raise TokenExpiredException
-
-    return user_id
-
-
 async def get_user_from_refresh(
-    user_id: str = Depends(check_refresh_token),
+    refresh_token: RefreshTokenSchema = Body(),
     session: AsyncSession = Depends(get_session),
 ):
+    payload_af_validate = await validate_token(refresh_token.refresh_token, session)
+
+    if payload_af_validate.get("type") != "refresh":
+        raise WrongTokenException
+
+    user_id = payload_af_validate.get("sub")
     user_mngr = User.manager(session)
     user = await user_mngr.get_one_or_none({"id": user_id})
     if not user:
@@ -61,16 +57,12 @@ async def get_user_from_refresh(
     return UserSchema(username=user.username, id=user.id, role=user.role)
 
 
-# Валидация refresh токена с последующим возвратом пользователя
-
-
 async def authenticate(
     auth_data: LoginUser, session: AsyncSession = Depends(get_session)
 ) -> UserSchema:
 
     user_mngr = User.manager(session)
     user = await user_mngr.get_one_or_none({"username": auth_data.username})
-
     if user is None:
         raise UnAuthException
 

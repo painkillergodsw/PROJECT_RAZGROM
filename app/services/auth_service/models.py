@@ -4,7 +4,11 @@ from sqlalchemy import String, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.services.auth_service.db_managers import UserManager, RoleManager
+from app.services.auth_service.db_managers import (
+    UserManager,
+    RoleManager,
+    JWTBlackListManager,
+)
 
 
 class User(Base):
@@ -30,6 +34,7 @@ class Role(Base):
 
 
 class JWTBlackList(Base):
+    _manager_cls = JWTBlackListManager
     jti: Mapped[str] = mapped_column(unique=True, nullable=False)
     expire_at: Mapped[datetime] = mapped_column(
         DateTime

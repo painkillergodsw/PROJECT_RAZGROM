@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.auth_service.schemas import (
@@ -24,7 +24,7 @@ from app.services.auth_service.utils import (
     create_access_token,
     create_refresh_token,
 )
-from services.auth_service.schemas import RefreshTokenSchema, AccessTokenSchema
+from services.auth_service.schemas import AccessTokenSchema
 
 router = APIRouter(prefix="/users")
 
@@ -71,7 +71,6 @@ async def logout(
 ) -> ResponseSchema:
     jwt_blacklist_mngr = JWTBlackList.manager(session)
 
-    # Добавляем access token в черный список
     await jwt_blacklist_mngr.add(
         {
             "jti": tokens_payload.access_token_payload.get("jti"),
@@ -82,7 +81,6 @@ async def logout(
         }
     )
 
-    # Добавляем refresh token в черный список, если он есть
     if tokens_payload.refresh_token_payload:
         await jwt_blacklist_mngr.add(
             {

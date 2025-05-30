@@ -19,11 +19,17 @@ TokenExpiredException = HTTPException(
     detail="Время жизни токена истекло",
 )
 
+WrongTokenException = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="Токен не верен",
+)
+
+
 UserNotExistsException = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
 )
 
 UserAlreadyLogout = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
-    detail="Токен уже помечен как недействительный",
+    detail="Токен помечен как недействительный",
 )

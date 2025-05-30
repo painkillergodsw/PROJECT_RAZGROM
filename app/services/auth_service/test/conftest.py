@@ -1,4 +1,3 @@
-import asyncio
 import os
 from logger import logger as l
 from pathlib import Path
@@ -44,7 +43,7 @@ async def setup_db():
 
     yield
 
-    await test_engine.dispose()
+    # await test_engine.dispose()
     l.info("Удаление тестовой базы данных")
 
     try:

@@ -19,7 +19,7 @@ class User(Base):
         unique=True,
         nullable=False,
     )
-    password: Mapped[str]
+    password: Mapped[str] = mapped_column(String(60), nullable=False)
 
     role_id: Mapped[int] = mapped_column(
         ForeignKey("roles.id"), nullable=True, default=1, server_default="1"
@@ -29,13 +29,13 @@ class User(Base):
 
 class Role(Base):
     _manager_cls = RoleManager
-    name: Mapped[str] = mapped_column(unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     users: Mapped[list["User"]] = relationship(back_populates="role")
 
 
 class JWTBlackList(Base):
     _manager_cls = JWTBlackListManager
-    jti: Mapped[str] = mapped_column(unique=True, nullable=False)
+    jti: Mapped[str] = mapped_column(String(654), unique=True, nullable=False)
     expire_at: Mapped[datetime] = mapped_column(
         DateTime
     )  # col for delete when jwt was expired

@@ -6,7 +6,7 @@ authors = [
     {name = "pgod.sw"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13, <4.0"
 dependencies = [
     "fastapi (>=0.115.12,<0.116.0)",
     "uvicorn[standart] (>=0.34.2,<0.35.0)",
@@ -20,6 +20,8 @@ dependencies = [
     "pytest (>=8.3.5,<9.0.0)",
     "pytest-asyncio (>=0.26.0,<0.27.0)",
     "httpx (>=0.28.1,<0.29.0)",
+    "asyncmy (>=0.2.10,<0.3.0)",
+    "aiomysql (>=0.2.0,<0.3.0)",
 ]
 
 [tool.poetry]

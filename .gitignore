@@ -1,6 +1,6 @@
 .idea/
 certs/
-app/.env
+app/services/auth_service/.env
 .venv
 __pycache__/
 app/services/auth_service/data/db.sqlite3

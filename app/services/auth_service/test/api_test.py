@@ -13,7 +13,7 @@ must_have_keys_refresh = ("sub", "exp", "iat", "type", "jti")
 
 
 @pytest.fixture
-async def client():
+async def client(override_db_session):
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://127.0.0.1",

@@ -81,8 +81,6 @@ async def validate_token(token: str, session: AsyncSession) -> dict:
     Токен должен содержать информацию о существующем пользователе, время жизни и уникальный идентификатор
     так же быть действительным
     """
-
-    print(token)
     payload = decode(token)
     user_id = payload.get("sub")
     exp = payload.get("exp")

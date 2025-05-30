@@ -1,3 +1,4 @@
+import asyncio
 import os
 from logger import logger as l
 from pathlib import Path
@@ -43,7 +44,7 @@ async def setup_db():
 
     yield
 
-    # await test_engine.dispose()
+    await test_engine.dispose()
     l.info("Удаление тестовой базы данных")
 
     try:
@@ -60,3 +61,10 @@ async def override_db_session():
 
     app.dependency_overrides[get_session] = override_get_session
     yield
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()

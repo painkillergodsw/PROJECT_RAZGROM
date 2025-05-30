@@ -20,29 +20,21 @@ from app.services.auth_service.schemas import LogOutSchema
 from app.services.auth_service.utils import validate_token
 
 
+async def try_validate(token: str | None, session: AsyncSession) -> dict | None:
+    if not token:
+        return None
+    try:
+        return await validate_token(token, session)
+    except UserAlreadyLogoutEx:
+        return None
+
+
 async def get_tokens_for_logout(
     tokens: LogOutSchema = Body(), session: AsyncSession = Depends(get_session)
 ) -> TokenPayloadSchema:
 
-    try:
-        access_token_payload = (
-            await validate_token(tokens.access_token, session)
-            if tokens.access_token
-            else None
-        )
-    except UserAlreadyLogoutEx:
-        access_token_payload = None
-        ...
-
-    try:
-        refresh_token_payload = (
-            await validate_token(tokens.refresh_token, session)
-            if tokens.refresh_token
-            else None
-        )
-    except UserAlreadyLogoutEx:
-        refresh_token_payload = None
-        ...
+    access_token_payload = await try_validate(tokens.access_token, session)
+    refresh_token_payload = await try_validate(tokens.refresh_token, session)
 
     if refresh_token_payload is None and access_token_payload is None:
         raise UserAlreadyLogout
@@ -57,7 +49,14 @@ async def get_user_from_refresh(
     refresh_token: RefreshTokenSchema = Body(),
     session: AsyncSession = Depends(get_session),
 ):
-    payload_af_validate = await validate_token(refresh_token.refresh_token, session)
+
+    payload_af_validate = await try_validate(refresh_token.refresh_token, session)
+
+    if not payload_af_validate:
+        raise UserAlreadyLogout
+
+    if payload_af_validate.get("type") != "refresh":
+        raise WrongTokenException
 
     if payload_af_validate.get("type") != "refresh":
         raise WrongTokenException

@@ -226,10 +226,12 @@ async def test_refresh_normal(client):
 ### TEST LOGOUT ###
 refresh_for_test_u_n_exists = create_token(payload1)
 payload1["type"] = "access"
+payload1["jti"] = str(uuid4())
 access_for_test_u_n_exists = create_token(payload1)
 
 normal_refresh_for_test = create_token(payload3)
 payload3["type"] = "access"
+payload3["jti"] = str(uuid4())
 normal_access_for_test = create_token(payload3)
 
 
@@ -243,7 +245,7 @@ normal_access_for_test = create_token(payload3)
             404,
         ),  # not exists user
         (normal_access_for_test, None, 200),  # only access
-        (None, normal_refresh_for_test, 422),  # only refresh
+        (None, normal_refresh_for_test, 200),  # only refresh
     ],
 )
 async def test_logout(client, access, refresh, expected_status):

@@ -71,15 +71,16 @@ async def logout(
 ) -> ResponseSchema:
     jwt_blacklist_mngr = JWTBlackList.manager(session)
 
-    await jwt_blacklist_mngr.add(
-        {
-            "jti": tokens_payload.access_token_payload.get("jti"),
-            "expire_at": datetime.fromtimestamp(
-                int(tokens_payload.access_token_payload.get("exp")),
-                tz=timezone.utc,
-            ),
-        }
-    )
+    if tokens_payload.access_token_payload:
+        await jwt_blacklist_mngr.add(
+            {
+                "jti": tokens_payload.access_token_payload.get("jti"),
+                "expire_at": datetime.fromtimestamp(
+                    int(tokens_payload.access_token_payload.get("exp")),
+                    tz=timezone.utc,
+                ),
+            }
+        )
 
     if tokens_payload.refresh_token_payload:
         await jwt_blacklist_mngr.add(

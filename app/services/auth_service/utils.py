@@ -9,8 +9,8 @@ from uuid import uuid4
 from app.services.auth_service.exeptions import (
     TokenExpiredException,
     UserNotExistsException,
-    UserAlreadyLogout,
     WrongTokenException,
+    UserAlreadyLogoutEx,
 )
 from app.services.auth_service.models import User
 from app.services.auth_service.models import JWTBlackList
@@ -81,6 +81,8 @@ async def validate_token(token: str, session: AsyncSession) -> dict:
     Токен должен содержать информацию о существующем пользователе, время жизни и уникальный идентификатор
     так же быть действительным
     """
+
+    print(token)
     payload = decode(token)
     user_id = payload.get("sub")
     exp = payload.get("exp")
@@ -104,6 +106,6 @@ async def validate_token(token: str, session: AsyncSession) -> dict:
     exists = await jwt_blacklist_mngr.get_one_or_none({"jti": jti})
 
     if exists:
-        raise UserAlreadyLogout
+        raise UserAlreadyLogoutEx()
 
     return payload

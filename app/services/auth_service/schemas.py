@@ -55,13 +55,30 @@ class UserSchema(BaseModel):
 
 
 class LogOutSchema(BaseModel):
-    access_token: str
+    access_token: Optional[str] = None
     refresh_token: Optional[str] = None
+
+    @model_validator(mode="after")
+    def at_least_one_token(self, value):
+        if self.access_token is not None or self.refresh_token is not None:
+            return self
+
+        raise ValueError("Должен быть передан хотя бы 1 токен")
 
 
 class TokenPayloadSchema(BaseModel):
-    access_token_payload: dict
+    access_token_payload: Optional[dict] = None
     refresh_token_payload: Optional[dict] = None
+
+    @model_validator(mode="after")
+    def at_least_one_token(self, value):
+        if (
+            self.access_token_payload is not None
+            or self.refresh_token_payload is not None
+        ):
+            return self
+
+        raise ValueError("Должен быть передан хотя бы 1 токен")
 
 
 class ResponseSchema(BaseModel):

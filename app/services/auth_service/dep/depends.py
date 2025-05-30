@@ -1,12 +1,11 @@
-import datetime
-
 from fastapi import Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.auth_service.exeptions import (
     UnAuthException,
-    TokenExpiredException,
     UserNotExistsException,
     WrongTokenException,
+    UserAlreadyLogoutEx,
+    UserAlreadyLogout,
 )
 from app.services.auth_service.schemas import (
     LoginUser,
@@ -17,7 +16,6 @@ from app.services.auth_service.schemas import (
 from app.services.auth_service.models import User
 from app.services.auth_service.utils import check_password
 from app.db.dep.depends import get_session
-from app.services.auth_service.utils import decode
 from app.services.auth_service.schemas import LogOutSchema
 from app.services.auth_service.utils import validate_token
 
@@ -26,12 +24,28 @@ async def get_tokens_for_logout(
     tokens: LogOutSchema = Body(), session: AsyncSession = Depends(get_session)
 ) -> TokenPayloadSchema:
 
-    access_token_payload = await validate_token(tokens.access_token, session)
-    refresh_token_payload = (
-        await validate_token(tokens.refresh_token, session)
-        if tokens.refresh_token
-        else None
-    )
+    try:
+        access_token_payload = (
+            await validate_token(tokens.access_token, session)
+            if tokens.access_token
+            else None
+        )
+    except UserAlreadyLogoutEx:
+        access_token_payload = None
+        ...
+
+    try:
+        refresh_token_payload = (
+            await validate_token(tokens.refresh_token, session)
+            if tokens.refresh_token
+            else None
+        )
+    except UserAlreadyLogoutEx:
+        refresh_token_payload = None
+        ...
+
+    if refresh_token_payload is None and access_token_payload is None:
+        raise UserAlreadyLogout
 
     return TokenPayloadSchema(
         refresh_token_payload=refresh_token_payload,

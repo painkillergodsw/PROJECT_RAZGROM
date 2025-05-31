@@ -33,7 +33,3 @@ UserAlreadyLogout = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="Токен помечен как недействительный",
 )
-
-
-class UserAlreadyLogoutEx(Exception):
-    pass

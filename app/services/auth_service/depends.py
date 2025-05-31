@@ -1,12 +1,13 @@
 from fastapi import Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from exeptions import (
+from HTTPExceptions import (
     UnAuthException,
     UserNotExistsException,
     WrongTokenException,
-    UserAlreadyLogoutEx,
     UserAlreadyLogout,
 )
+
+from exceptions import UserAlreadyLogoutException
 from schemas import (
     LoginUser,
     UserSchema,
@@ -25,7 +26,7 @@ async def try_validate(token: str | None, session: AsyncSession) -> dict | None:
         return None
     try:
         return await validate_token(token, session)
-    except UserAlreadyLogoutEx:
+    except UserAlreadyLogoutException:
         return None
 
 

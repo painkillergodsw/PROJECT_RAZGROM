@@ -6,12 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config import config
 from datetime import datetime, timedelta
 from uuid import uuid4
-from exeptions import (
+from HTTPExceptions import (
     TokenExpiredException,
     UserNotExistsException,
     WrongTokenException,
-    UserAlreadyLogoutEx,
 )
+from exceptions import UserAlreadyLogoutException
 from models import User, JWTBlackList
 
 hasher = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -103,6 +103,6 @@ async def validate_token(token: str, session: AsyncSession) -> dict:
     exists = await jwt_blacklist_mngr.get_one_or_none({"jti": jti})
 
     if exists:
-        raise UserAlreadyLogoutEx()
+        raise UserAlreadyLogoutException()
 
     return payload

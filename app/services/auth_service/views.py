@@ -14,7 +14,7 @@ from schemas import (
 
 from db.dep.depends import get_session
 from models import User
-from exeptions import UserAlreadyExistsException
+from HTTPExceptions import UserAlreadyExistsException
 from services.auth_service.depends import (
     authenticate,
     get_user_from_refresh,

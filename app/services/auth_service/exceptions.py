@@ -1,0 +1,2 @@
+class UserAlreadyLogoutException(Exception):
+    pass

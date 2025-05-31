@@ -1,7 +1,7 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field, ValidationError, model_validator
-from app.services.auth_service.utils import get_password_hash
+from pydantic import BaseModel, Field, model_validator
+from utils import get_password_hash
 
 
 class CreateUser(BaseModel):

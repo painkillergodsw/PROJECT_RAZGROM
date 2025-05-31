@@ -1,9 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
-from app.services.auth_service.views import router
+from views import router
 from contextlib import asynccontextmanager
-from app.services.auth_service.models import Role
-from app.db.db import async_session_maker
+from models import Role
+from db.db import async_session_maker
 
 
 @asynccontextmanager

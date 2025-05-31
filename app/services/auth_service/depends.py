@@ -1,23 +1,23 @@
 from fastapi import Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.services.auth_service.exeptions import (
+from exeptions import (
     UnAuthException,
     UserNotExistsException,
     WrongTokenException,
     UserAlreadyLogoutEx,
     UserAlreadyLogout,
 )
-from app.services.auth_service.schemas import (
+from schemas import (
     LoginUser,
     UserSchema,
     TokenPayloadSchema,
     RefreshTokenSchema,
 )
-from app.services.auth_service.models import User
-from app.services.auth_service.utils import check_password
-from app.db.dep.depends import get_session
-from app.services.auth_service.schemas import LogOutSchema
-from app.services.auth_service.utils import validate_token
+from models import User
+from utils import check_password
+from db.dep.depends import get_session
+from schemas import LogOutSchema
+from utils import validate_token
 
 
 async def try_validate(token: str | None, session: AsyncSession) -> dict | None:

@@ -14,7 +14,6 @@ project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
 )
 sys.path.insert(0, project_root)
-from app.services.auth_service.models import User, Role
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -25,7 +24,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from app.services.auth_service.config import config as app_cfg
+from services.auth_service.config import config as app_cfg
 
 config.set_main_option("sqlalchemy.url", app_cfg.db.conn_url)
 
@@ -34,7 +33,7 @@ config.set_main_option("sqlalchemy.url", app_cfg.db.conn_url)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from app.db.base import Base
+from services.auth_service.db import Base
 
 target_metadata = Base.metadata
 

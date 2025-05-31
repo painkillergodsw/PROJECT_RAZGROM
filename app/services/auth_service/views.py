@@ -3,28 +3,28 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.auth_service.schemas import (
+from schemas import (
     CreateUser,
     UserSchema,
     TokensSchema,
     TokenPayloadSchema,
     ResponseSchema,
+    AccessTokenSchema,
 )
 
 from db.dep.depends import get_session
-from app.services.auth_service.models import User
-from app.services.auth_service.exeptions import UserAlreadyExistsException
-from app.services.auth_service.dep.depends import (
+from models import User
+from exeptions import UserAlreadyExistsException
+from services.auth_service.depends import (
     authenticate,
     get_user_from_refresh,
     get_tokens_for_logout,
 )
-from app.services.auth_service.models import JWTBlackList
-from app.services.auth_service.utils import (
+from models import JWTBlackList
+from utils import (
     create_access_token,
     create_refresh_token,
 )
-from services.auth_service.schemas import AccessTokenSchema
 
 router = APIRouter(prefix="/users")
 

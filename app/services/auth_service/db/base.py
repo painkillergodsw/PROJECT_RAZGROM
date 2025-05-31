@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, declared_attr
 
-from app.db.managers import BaseManager
+from services.auth_service.db.managers import BaseManager
 
 
 class Base(DeclarativeBase):

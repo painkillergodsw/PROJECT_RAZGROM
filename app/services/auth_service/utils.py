@@ -1,19 +1,18 @@
-from datetime import timezone, UTC
 import jwt
+from datetime import timezone, UTC
 from jwt import ExpiredSignatureError
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.services.auth_service.config import config
+from config import config
 from datetime import datetime, timedelta
 from uuid import uuid4
-from app.services.auth_service.exeptions import (
+from exeptions import (
     TokenExpiredException,
     UserNotExistsException,
     WrongTokenException,
     UserAlreadyLogoutEx,
 )
-from app.services.auth_service.models import User
-from app.services.auth_service.models import JWTBlackList
+from models import User, JWTBlackList
 
 hasher = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

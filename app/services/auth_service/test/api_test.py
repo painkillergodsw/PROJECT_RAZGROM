@@ -4,9 +4,9 @@ from uuid import uuid4
 import pytest
 from httpx import AsyncClient, ASGITransport
 
-from app.services.auth_service.run import app
-from app.services.auth_service.utils import decode, create_token
-from app.services.auth_service.config import config
+from utils import decode, create_token
+from config import config
+from run import app
 
 must_have_keys_access = ("sub", "role", "exp", "iat", "type", "jti")
 must_have_keys_refresh = ("sub", "exp", "iat", "type", "jti")

@@ -3,16 +3,16 @@ import os
 from logger import logger as l
 from pathlib import Path
 import pytest
-from app.services.auth_service.run import app
 from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
     AsyncSession,
 )
 
-from app.db.base import Base
+from run import app
+from db.base import Base
 from db.dep.depends import get_session
-from app.services.auth_service.models import Role
+from models import Role
 
 BASE_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 TEST_DB_FILE = f'{BASE_DIR / "test_db.sqlite3"}'

@@ -20,7 +20,6 @@ class DBSetting(BaseSettings):
 
     @property
     def conn_url(self) -> str:
-        # return f"sqlite+aiosqlite:///{DATA_DIR / "db.sqlite3"}"
         return f"mysql+aiomysql://{self.DB_USER}:{self.DB_PWD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 

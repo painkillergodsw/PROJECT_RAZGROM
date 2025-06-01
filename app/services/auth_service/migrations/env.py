@@ -4,16 +4,9 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-
 from alembic import context
-import os
-import sys
 
-# Добавляем корневую директорию проекта в путь Python
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
-)
-sys.path.insert(0, project_root)
+from models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,7 +17,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from services.auth_service.config import config as app_cfg
+from config import config as app_cfg
 
 config.set_main_option("sqlalchemy.url", app_cfg.db.conn_url)
 
@@ -33,7 +26,7 @@ config.set_main_option("sqlalchemy.url", app_cfg.db.conn_url)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from services.auth_service.db import Base
+from db.base import Base
 
 target_metadata = Base.metadata
 

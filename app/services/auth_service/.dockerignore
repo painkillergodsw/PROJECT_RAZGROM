@@ -1,0 +1,5 @@
+.idea/
+.venv/
+.Dockerfile
+.certs/
+test/

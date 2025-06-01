@@ -1,0 +1,32 @@
+services:
+
+  db_auth_service:
+    image: mysql:9.3
+    container_name: db_auth_service
+    restart: unless-stopped
+    volumes:
+      - dbfile:/var/lib/mysql
+    env_file:
+      - ./.env_db
+    networks:
+      - app
+
+  auth_service:
+    build:
+      dockerfile: ./Dockerfile
+    depends_on:
+      - db_auth_service
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  dbfile:
+    driver: local

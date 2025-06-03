@@ -81,21 +81,64 @@ def decode(token) -> dict:
         raise TokenExpiredException
 
 
-# TODO(BROKE ON 2 FUNK)
-
-
-async def validate_token(
-    token: str, session: AsyncSession, redis_session: Redis = None
+async def validate_access_token(
+    token: str, session: AsyncSession, redis_session: Redis
 ) -> dict:
-    """
-    Токен должен содержать информацию о существующем пользователе, время жизни и уникальный идентификатор
-    так же быть действительным
-    """
+    token_payload = await validate_token_base(token, session)
+
+    if token_payload:
+        if token_payload.get("type") == "access":
+            exists = await redis_session.get(token_payload.get("jti"))
+            if exists:
+                raise UserAlreadyLogoutException()
+
+        return token_payload
+
+
+async def validate_refresh_token(token: str, session: AsyncSession) -> dict:
+
+    token_payload = await validate_token_base(token, session)
+
+    if token_payload:
+        if token_payload.get("type") == "refresh":
+            jwt_blacklist_mngr = JWTBlackList.manager(session)
+            exists = await jwt_blacklist_mngr.get_one_or_none(
+                {"jti": token_payload.get("jti")}
+            )
+            if exists:
+                raise UserAlreadyLogoutException()
+
+    return token_payload
+
+
+async def try_validate_refresh(token: str, session: AsyncSession) -> dict | None:
+    if not token:
+        return None
+    try:
+        return await validate_refresh_token(token, session)
+    except UserAlreadyLogoutException:
+        return None
+
+
+async def try_validate_access(
+    token: str, session: AsyncSession, redis: Redis
+) -> dict | None:
+    if not token:
+        return None
+    try:
+        return await validate_access_token(token, session, redis)
+    except UserAlreadyLogoutException:
+        return None
+
+
+async def validate_token_base(token: str, session: AsyncSession) -> dict:
+
     payload = decode(token)
     user_id = payload.get("sub")
     exp = payload.get("exp")
     jti = payload.get("jti")
     t = payload.get("type")
+
     exp_time = datetime.fromtimestamp(int(exp), tz=timezone.utc)
 
     if not t or not jti or not user_id:
@@ -109,16 +152,5 @@ async def validate_token(
 
     if not user:
         raise UserNotExistsException
-
-    if t == "refresh":
-        jwt_blacklist_mngr = JWTBlackList.manager(session)
-        exists = await jwt_blacklist_mngr.get_one_or_none({"jti": jti})
-        if exists:
-            raise UserAlreadyLogoutException()
-
-    if t == "access":
-        exists = await redis_session.get(jti)
-        if exists:
-            raise UserAlreadyLogoutException()
 
     return payload

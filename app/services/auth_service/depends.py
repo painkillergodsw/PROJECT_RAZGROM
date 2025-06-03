@@ -20,18 +20,7 @@ from models import User
 from utils import check_password
 from db.dep.depends import get_session
 from schemas import LogOutSchema
-from utils import validate_token
-
-
-async def try_validate(
-    token: str | None, session: AsyncSession, redis_session: Redis
-) -> dict | None:
-    if not token:
-        return None
-    try:
-        return await validate_token(token, session, redis_session)
-    except UserAlreadyLogoutException:
-        return None
+from utils import try_validate_refresh, try_validate_access
 
 
 async def get_tokens_for_logout(
@@ -40,12 +29,10 @@ async def get_tokens_for_logout(
     redis_session: Redis = Depends(get_redis_client),
 ) -> TokenPayloadSchema:
 
-    access_token_payload = await try_validate(
+    access_token_payload = await try_validate_access(
         tokens.access_token, session, redis_session
     )
-    refresh_token_payload = await try_validate(
-        tokens.refresh_token, session, redis_session
-    )
+    refresh_token_payload = await try_validate_refresh(tokens.refresh_token, session)
 
     if refresh_token_payload is None and access_token_payload is None:
         raise UserAlreadyLogout
@@ -61,7 +48,9 @@ async def get_user_from_refresh(
     session: AsyncSession = Depends(get_session),
 ):
 
-    payload_af_validate = await try_validate(refresh_token.refresh_token, session)
+    payload_af_validate = await try_validate_refresh(
+        refresh_token.refresh_token, session
+    )
 
     if not payload_af_validate:
         raise UserAlreadyLogout

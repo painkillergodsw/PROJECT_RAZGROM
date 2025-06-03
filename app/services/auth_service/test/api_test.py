@@ -123,7 +123,7 @@ async def test_auth_tokens(client):
 
 
 now = datetime.now(UTC)
-expire = now + timedelta(hours=config.jwt.refresh_token_lifetime_hour)
+expire = now + timedelta(hours=config.jwt.refresh_token_lifetime_hours)
 
 payload1 = {
     "exp": expire,

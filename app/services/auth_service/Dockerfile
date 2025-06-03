@@ -19,7 +19,7 @@ RUN openssl genrsa -out certs/private.pem 2048 && \
 
 RUN poetry config virtualenvs.create false
 COPY pyproject.toml poetry.lock ./
-COPY ./ ./
+COPY . .
 
 RUN poetry install --no-root
 

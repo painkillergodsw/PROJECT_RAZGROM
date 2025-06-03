@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
-
+from redis.asyncio import Redis
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from config import config
+from redis_db.dep.depends import get_redis_client
 from schemas import (
     CreateUser,
     UserSchema,
@@ -10,6 +12,7 @@ from schemas import (
     TokenPayloadSchema,
     ResponseSchema,
     AccessTokenSchema,
+    PubKeySchema,
 )
 
 from db.dep.depends import get_session
@@ -68,19 +71,21 @@ def refresh(user: UserSchema = Depends(get_user_from_refresh)) -> AccessTokenSch
 async def logout(
     tokens_payload: TokenPayloadSchema = Depends(get_tokens_for_logout),
     session: AsyncSession = Depends(get_session),
+    redis_session: Redis = Depends(get_redis_client),
 ) -> ResponseSchema:
     jwt_blacklist_mngr = JWTBlackList.manager(session)
 
     if tokens_payload.access_token_payload:
-        await jwt_blacklist_mngr.add(
-            {
-                "jti": tokens_payload.access_token_payload.get("jti"),
-                "expire_at": datetime.fromtimestamp(
-                    int(tokens_payload.access_token_payload.get("exp")),
-                    tz=timezone.utc,
-                ),
-            }
+        ex = datetime.fromtimestamp(
+            int(tokens_payload.access_token_payload.get("exp")), tz=timezone.utc
         )
+
+        now = datetime.now(timezone.utc)
+        second_left = (ex - now).total_seconds()
+
+        jti = tokens_payload.access_token_payload.get("jti")
+
+        await redis_session.set(jti, "revoke", ex=int(second_left))
 
     if tokens_payload.refresh_token_payload:
         await jwt_blacklist_mngr.add(
@@ -94,3 +99,8 @@ async def logout(
         )
 
     return ResponseSchema(result="Success")
+
+
+@router.get("/tech/pubkey")
+async def pubkey() -> PubKeySchema:
+    return PubKeySchema(key=config.jwt.public_key_path.read_text())

@@ -1,4 +1,5 @@
 from fastapi import Depends, Body
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from HTTPExceptions import (
     UnAuthException,
@@ -8,6 +9,7 @@ from HTTPExceptions import (
 )
 
 from exceptions import UserAlreadyLogoutException
+from redis_db.dep.depends import get_redis_client
 from schemas import (
     LoginUser,
     UserSchema,
@@ -21,21 +23,29 @@ from schemas import LogOutSchema
 from utils import validate_token
 
 
-async def try_validate(token: str | None, session: AsyncSession) -> dict | None:
+async def try_validate(
+    token: str | None, session: AsyncSession, redis_session: Redis
+) -> dict | None:
     if not token:
         return None
     try:
-        return await validate_token(token, session)
+        return await validate_token(token, session, redis_session)
     except UserAlreadyLogoutException:
         return None
 
 
 async def get_tokens_for_logout(
-    tokens: LogOutSchema = Body(), session: AsyncSession = Depends(get_session)
+    tokens: LogOutSchema = Body(),
+    session: AsyncSession = Depends(get_session),
+    redis_session: Redis = Depends(get_redis_client),
 ) -> TokenPayloadSchema:
 
-    access_token_payload = await try_validate(tokens.access_token, session)
-    refresh_token_payload = await try_validate(tokens.refresh_token, session)
+    access_token_payload = await try_validate(
+        tokens.access_token, session, redis_session
+    )
+    refresh_token_payload = await try_validate(
+        tokens.refresh_token, session, redis_session
+    )
 
     if refresh_token_payload is None and access_token_payload is None:
         raise UserAlreadyLogout

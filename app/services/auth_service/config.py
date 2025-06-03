@@ -28,12 +28,20 @@ class JWTSetting(BaseSettings):
     public_key_path: Path = CERTS_DIR / "public.pem"
     algorithm: str = "RS256"
     access_token_lifetime_minutes: int = 15
-    refresh_token_lifetime_hour: int = 24 * 15
+    refresh_token_lifetime_hours: int = 24 * 15
+
+
+class RedisSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=env_path, extra="ignore")
+    REDIS_PORT: str
+    REDIS_HOST: str
+    REDIS_DB: int = 0
 
 
 class Config(BaseSettings):
     db: DBSetting = DBSetting()
     jwt: JWTSetting = JWTSetting()
+    redis: RedisSettings = RedisSettings()
 
 
 config = Config()

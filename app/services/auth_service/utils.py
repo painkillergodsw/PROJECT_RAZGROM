@@ -2,6 +2,7 @@ import jwt
 from datetime import timezone, UTC
 from jwt import ExpiredSignatureError
 from passlib.context import CryptContext
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from config import config
 from datetime import datetime, timedelta
@@ -45,14 +46,19 @@ def create_token(payload):
 
 
 def get_tech_info(t_type: str):
+    now = datetime.now(UTC)
+
+    ex = None
 
     if t_type not in ("refresh", "access"):
         raise AttributeError("Wrong type")
 
-    now = datetime.now(UTC)
-    expire = now + timedelta(hours=config.jwt.refresh_token_lifetime_hour)
+    if t_type == "access":
+        ex = now + timedelta(minutes=config.jwt.access_token_lifetime_minutes)
+    if t_type == "refresh":
+        ex = now + timedelta(hours=config.jwt.refresh_token_lifetime_hours)
 
-    return {"exp": expire, "iat": now, "type": t_type, "jti": str(uuid4())}
+    return {"exp": ex, "iat": now, "type": t_type, "jti": str(uuid4())}
 
 
 def create_refresh_token(payload: dict):
@@ -75,7 +81,12 @@ def decode(token) -> dict:
         raise TokenExpiredException
 
 
-async def validate_token(token: str, session: AsyncSession) -> dict:
+# TODO(BROKE ON 2 FUNK)
+
+
+async def validate_token(
+    token: str, session: AsyncSession, redis_session: Redis = None
+) -> dict:
     """
     Токен должен содержать информацию о существующем пользователе, время жизни и уникальный идентификатор
     так же быть действительным
@@ -99,10 +110,15 @@ async def validate_token(token: str, session: AsyncSession) -> dict:
     if not user:
         raise UserNotExistsException
 
-    jwt_blacklist_mngr = JWTBlackList.manager(session)
-    exists = await jwt_blacklist_mngr.get_one_or_none({"jti": jti})
+    if t == "refresh":
+        jwt_blacklist_mngr = JWTBlackList.manager(session)
+        exists = await jwt_blacklist_mngr.get_one_or_none({"jti": jti})
+        if exists:
+            raise UserAlreadyLogoutException()
 
-    if exists:
-        raise UserAlreadyLogoutException()
+    if t == "access":
+        exists = await redis_session.get(jti)
+        if exists:
+            raise UserAlreadyLogoutException()
 
     return payload

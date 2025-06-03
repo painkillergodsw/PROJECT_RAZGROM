@@ -83,3 +83,7 @@ class TokenPayloadSchema(BaseModel):
 
 class ResponseSchema(BaseModel):
     result: str
+
+
+class PubKeySchema(BaseModel):
+    key: str

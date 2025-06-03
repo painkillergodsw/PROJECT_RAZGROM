@@ -36,6 +36,4 @@ class Role(Base):
 class JWTBlackList(Base):
     _manager_cls = JWTBlackListManager
     jti: Mapped[str] = mapped_column(String(654), unique=True, nullable=False)
-    expire_at: Mapped[datetime] = mapped_column(
-        DateTime
-    )  # col for delete when jwt was expired
+    expire_at: Mapped[datetime] = mapped_column(DateTime)

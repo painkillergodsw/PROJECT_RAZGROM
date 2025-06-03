@@ -30,8 +30,6 @@ services:
     image: redis:8.0.2
     container_name: redis
     restart: always
-    ports:
-      - "6379:6379"
     networks:
       - app
 

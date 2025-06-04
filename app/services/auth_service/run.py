@@ -6,6 +6,8 @@ from models import Role
 from db.db import async_session_maker
 from config import config
 import redis.asyncio as redis
+from redis.exceptions import ConnectionError
+from logger import logger as l
 
 
 @asynccontextmanager
@@ -23,8 +25,12 @@ async def start(app: FastAPI):
         port=config.redis.REDIS_PORT,
         db=config.redis.REDIS_DB,
     )
-    pong = await client.ping()
-    print(f"redis connection: ", pong)
+    try:
+        pong = await client.ping()
+        l.info(f"redis connection: {str(pong)}")
+    except ConnectionError:
+        l.error("redis connection error")
+
     yield
 
 

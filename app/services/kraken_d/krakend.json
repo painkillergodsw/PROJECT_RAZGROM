@@ -1,0 +1,81 @@
+{
+  "version": 3,
+  "name": "API gateaway",
+  "port": 8080,
+  "cache_ttl": "300s",
+  "extra_config": {
+    "router": {
+      "return_error_msg": true
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/api/v1/users/registrate",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "users/registrate",
+          "host": [
+            "http://auth_service:8228"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/users/authenticate",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "users/auth",
+          "host": [
+            "http://auth_service:8228"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/users/refresh",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "users/refresh",
+          "host": [
+            "http://auth_service:8228"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/users/logout",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "users/logout",
+          "host": [
+            "http://auth_service:8228"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

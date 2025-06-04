@@ -19,8 +19,6 @@ services:
     depends_on:
       - db_auth_service
       - redis
-    ports:
-      - "8228:8228"
     env_file:
       - auth_service/.env
     networks:
@@ -30,6 +28,18 @@ services:
     image: redis:8.0.2
     container_name: redis
     restart: always
+    networks:
+      - app
+
+  kraken_d:
+    container_name: kraken_d
+    build:
+      context: ./kraken_d
+      dockerfile: ./Dockerfile
+    depends_on:
+      - auth_service
+    ports:
+      - "8080:8080"
     networks:
       - app
 

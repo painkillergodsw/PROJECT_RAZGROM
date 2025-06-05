@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 from redis.asyncio import Redis
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from jwcrypto import jwk
 from config import config
 from redis_db.dep.depends import get_redis_client
 from schemas import (
@@ -22,6 +22,7 @@ from depends import (
     authenticate,
     get_user_from_refresh,
     get_tokens_for_logout,
+    get_user_from_request,
 )
 from models import JWTBlackList
 from utils import (
@@ -103,4 +104,16 @@ async def logout(
 
 @router.get("/tech/pubkey")
 async def pubkey() -> PubKeySchema:
-    return PubKeySchema(key=config.jwt.public_key_path.read_text())
+    return PubKeySchema(
+        keys=[jwk.JWK.from_pem(config.jwt.public_key_path.read_bytes())]
+    )
+
+
+@router.get("/me")
+async def me(user: UserSchema = Depends(get_user_from_request)) -> UserSchema:
+    return UserSchema(username=user.username, id=user.id, role=user.role)
+
+
+@router.get("/health_check")
+async def health_check() -> dict:
+    return {"status": "ok"}

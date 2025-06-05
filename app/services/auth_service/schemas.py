@@ -86,4 +86,10 @@ class ResponseSchema(BaseModel):
 
 
 class PubKeySchema(BaseModel):
-    key: str
+    keys: list[dict]
+
+
+class AccessTokenInfoFromHeaders(BaseModel):
+    sub: int
+    jti: str
+    role: str

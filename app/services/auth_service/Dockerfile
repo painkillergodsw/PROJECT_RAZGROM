@@ -9,6 +9,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends openssl gcc libffi-dev netcat-openbsd && \
     pip install --upgrade pip wheel "poetry==2.1.3" && \
     poetry config virtualenvs.create false && \
+    apt-get install -y curl && \
     rm -rf /var/lib/apt/lists/*
 
 

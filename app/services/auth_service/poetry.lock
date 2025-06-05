@@ -485,6 +485,22 @@ files = [
 ]
 
 [[package]]
+name = "jwcrypto"
+version = "1.5.6"
+description = "Implementation of JOSE Web standards"
+optional = false
+python-versions = ">= 3.8"
+groups = ["main"]
+files = [
+    {file = "jwcrypto-1.5.6-py3-none-any.whl", hash = "sha256:150d2b0ebbdb8f40b77f543fb44ffd2baeff48788be71f67f03566692fd55789"},
+    {file = "jwcrypto-1.5.6.tar.gz", hash = "sha256:771a87762a0c081ae6166958a954f80848820b2ab066937dc8b8379d65b1b039"},
+]
+
+[package.dependencies]
+cryptography = ">=3.4"
+typing-extensions = ">=4.5.0"
+
+[[package]]
 name = "logger"
 version = "1.4"
 description = "Python logging helper"
@@ -1087,4 +1103,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13, <4.0"
-content-hash = "fe99b8fe8e16e83753ad4ef2f2e9f1e2f7c349a8924ecd695ad8542d91b2f3ab"
+content-hash = "ffe253eaec71016ade1489141d36c973d95389a6f788ee152e87e0d525607d06"

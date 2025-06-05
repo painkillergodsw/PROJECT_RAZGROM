@@ -1,5 +1,7 @@
 import jwt
 from datetime import timezone, UTC
+
+from jwcrypto import jwk
 from jwt import ExpiredSignatureError
 from passlib.context import CryptContext
 from redis.asyncio import Redis
@@ -38,10 +40,14 @@ def create_access_token(
 
 
 def create_token(payload):
+    ex_headers = {
+        "kid": dict(jwk.JWK.from_pem(config.jwt.public_key_path.read_bytes()))["kid"]
+    }
     return jwt.encode(
         payload,
         config.jwt.private_key_path.read_text(),
         algorithm=config.jwt.algorithm,
+        headers=ex_headers,
     )
 
 
@@ -81,17 +87,22 @@ def decode(token) -> dict:
         raise TokenExpiredException
 
 
+async def check_access_revoked(jti: str, redis_session: Redis):
+    exists = await redis_session.get(jti)
+    if exists:
+        raise UserAlreadyLogoutException()
+    return True
+
+
 async def validate_access_token(
     token: str, session: AsyncSession, redis_session: Redis
 ) -> dict:
+
     token_payload = await validate_token_base(token, session)
 
     if token_payload:
         if token_payload.get("type") == "access":
-            exists = await redis_session.get(token_payload.get("jti"))
-            if exists:
-                raise UserAlreadyLogoutException()
-
+            await check_access_revoked(token_payload.get("jti"), redis_session)
         return token_payload
 
 

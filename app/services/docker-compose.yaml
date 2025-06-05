@@ -24,6 +24,28 @@ services:
     networks:
       - app
 
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://auth_service:8228/users/health_check" ]
+      interval: 5s
+      retries: 20
+
+
+  kraken_d:
+    container_name: kraken_d
+    build:
+      context: ./kraken_d
+      dockerfile: ./Dockerfile
+
+    depends_on:
+      auth_service:
+        condition: service_healthy
+
+    ports:
+      - "8080:8080"
+    networks:
+      - app
+
   redis:
     image: redis:8.0.2
     container_name: redis
@@ -31,17 +53,6 @@ services:
     networks:
       - app
 
-  kraken_d:
-    container_name: kraken_d
-    build:
-      context: ./kraken_d
-      dockerfile: ./Dockerfile
-    depends_on:
-      - auth_service
-    ports:
-      - "8080:8080"
-    networks:
-      - app
 
 networks:
   app:

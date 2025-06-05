@@ -158,6 +158,9 @@ async def validate_token_base(token: str, session: AsyncSession) -> dict:
     if not t or not jti or not user_id:
         raise WrongTokenException
 
+    if t not in ("access", "refresh"):
+        raise WrongTokenException
+
     if (not exp) or (exp_time < datetime.now(timezone.utc)):
         raise TokenExpiredException
 

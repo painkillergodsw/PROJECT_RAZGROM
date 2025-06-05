@@ -101,9 +101,11 @@ async def validate_access_token(
     token_payload = await validate_token_base(token, session)
 
     if token_payload:
-        if token_payload.get("type") == "access":
-            await check_access_revoked(token_payload.get("jti"), redis_session)
-        return token_payload
+        if token_payload.get("type") != "access":
+            raise WrongTokenException
+        await check_access_revoked(token_payload.get("jti"), redis_session)
+
+    return token_payload
 
 
 async def validate_refresh_token(token: str, session: AsyncSession) -> dict:
@@ -111,13 +113,14 @@ async def validate_refresh_token(token: str, session: AsyncSession) -> dict:
     token_payload = await validate_token_base(token, session)
 
     if token_payload:
-        if token_payload.get("type") == "refresh":
-            jwt_blacklist_mngr = JWTBlackList.manager(session)
-            exists = await jwt_blacklist_mngr.get_one_or_none(
-                {"jti": token_payload.get("jti")}
-            )
-            if exists:
-                raise UserAlreadyLogoutException()
+        if token_payload.get("type") != "refresh":
+            raise WrongTokenException
+        jwt_blacklist_mngr = JWTBlackList.manager(session)
+        exists = await jwt_blacklist_mngr.get_one_or_none(
+            {"jti": token_payload.get("jti")}
+        )
+        if exists:
+            raise UserAlreadyLogoutException()
 
     return token_payload
 

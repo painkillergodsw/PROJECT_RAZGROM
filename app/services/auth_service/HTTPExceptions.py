@@ -1,35 +1,35 @@
 from fastapi import status, HTTPException
 
-UserAlreadyExistsException = HTTPException(
+UserAlreadyExistsHTTPException = HTTPException(
     status_code=status.HTTP_409_CONFLICT, detail="Пользователь уже существует"
 )
 
-UnAuthException = HTTPException(
+UnAuthHTTPException = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Неверное имя пользователя или пароль",
 )
 
-TokenNotProvideException = HTTPException(
+TokenNotProvideHTTPException = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
     detail="Токен отсутствует в заголовке или теле запроса",
 )
 
-TokenExpiredException = HTTPException(
+TokenExpiredHTTPException = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
     detail="Время жизни токена истекло",
 )
 
-WrongTokenException = HTTPException(
+WrongTokenHTTPException = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
     detail="Токен не верен",
 )
 
 
-UserNotExistsException = HTTPException(
+UserNotExistsHTTPException = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
 )
 
-UserAlreadyLogout = HTTPException(
+UserAlreadyLogoutHTTPException = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="Токен помечен как недействительный",
 )

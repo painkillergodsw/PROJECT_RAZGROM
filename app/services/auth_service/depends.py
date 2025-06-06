@@ -1,11 +1,10 @@
 from fastapi import Depends, Body, Header
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from HTTPExceptions import (
-    UnAuthException,
-    UserNotExistsException,
-    UserAlreadyLogout,
+    UnAuthHTTPException,
+    UserNotExistsHTTPException,
+    UserAlreadyLogoutHTTPException,
 )
 from exceptions import UserAlreadyLogoutException
 
@@ -30,13 +29,27 @@ async def get_tokens_for_logout(
     redis_session: Redis = Depends(get_redis_client),
 ) -> TokenPayloadSchema:
 
-    access_token_payload = await try_validate_access(
-        tokens.access_token, session, redis_session
-    )
+    access_token_payload = await try_validate_access(tokens.access_token, redis_session)
     refresh_token_payload = await try_validate_refresh(tokens.refresh_token, session)
 
+    user_mngr = User.manager(session)
+
+    if refresh_token_payload:
+        user_from_refresh = user_mngr.get_one_or_none(
+            {"id": refresh_token_payload.get("sub")}
+        )
+        if not user_from_refresh:
+            raise UserNotExistsHTTPException
+
+    if access_token_payload:
+        user_from_access = user_mngr.get_one_or_none(
+            {"id": refresh_token_payload.get("sub")}
+        )
+        if not user_from_access:
+            raise UserNotExistsHTTPException
+
     if refresh_token_payload is None and access_token_payload is None:
-        raise UserAlreadyLogout
+        raise UserAlreadyLogoutHTTPException
 
     return TokenPayloadSchema(
         refresh_token_payload=refresh_token_payload,
@@ -62,13 +75,13 @@ async def get_user_from_request(
     try:
         await check_access_revoked(access_token_info.jti, redis_session)
     except UserAlreadyLogoutException:
-        raise UserAlreadyLogout
+        raise UserAlreadyLogoutHTTPException
 
     user_id = access_token_info.sub
     user_mngr = User.manager(session)
     user = await user_mngr.get_one_or_none({"id": user_id})
     if not user:
-        raise UserNotExistsException
+        raise UserNotExistsHTTPException
 
     return UserSchema(username=user.username, id=user.id, role=user.role)
 
@@ -83,13 +96,13 @@ async def get_user_from_refresh(
     )
 
     if not payload_af_validate:
-        raise UserAlreadyLogout
+        raise UserAlreadyLogoutHTTPException
 
     user_id = payload_af_validate.get("sub")
     user_mngr = User.manager(session)
     user = await user_mngr.get_one_or_none({"id": user_id})
     if not user:
-        raise UserNotExistsException
+        raise UserNotExistsHTTPException
 
     return UserSchema(username=user.username, id=user.id, role=user.role)
 
@@ -101,9 +114,9 @@ async def authenticate(
     user_mngr = User.manager(session)
     user = await user_mngr.get_one_or_none({"username": auth_data.username})
     if user is None:
-        raise UnAuthException
+        raise UnAuthHTTPException
 
     if not check_password(auth_data.password, user.password):
-        raise UnAuthException
+        raise UnAuthHTTPException
 
     return UserSchema.from_orm(user)

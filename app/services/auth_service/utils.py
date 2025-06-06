@@ -10,12 +10,11 @@ from config import config
 from datetime import datetime, timedelta
 from uuid import uuid4
 from HTTPExceptions import (
-    TokenExpiredException,
-    UserNotExistsException,
-    WrongTokenException,
+    TokenExpiredHTTPException,
+    WrongTokenHTTPException,
 )
 from exceptions import UserAlreadyLogoutException
-from models import User, JWTBlackList
+from models import JWTBlackList
 
 hasher = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -84,7 +83,7 @@ def decode(token) -> dict:
             algorithms=[config.jwt.algorithm],
         )
     except ExpiredSignatureError:
-        raise TokenExpiredException
+        raise TokenExpiredHTTPException
 
 
 async def check_access_revoked(jti: str, redis_session: Redis):
@@ -94,15 +93,13 @@ async def check_access_revoked(jti: str, redis_session: Redis):
     return True
 
 
-async def validate_access_token(
-    token: str, session: AsyncSession, redis_session: Redis
-) -> dict:
+async def validate_access_token(token: str, redis_session: Redis) -> dict:
 
-    token_payload = await validate_token_base(token, session)
+    token_payload = await validate_token_base(token)
 
     if token_payload:
         if token_payload.get("type") != "access":
-            raise WrongTokenException
+            raise WrongTokenHTTPException
         await check_access_revoked(token_payload.get("jti"), redis_session)
 
     return token_payload
@@ -110,11 +107,11 @@ async def validate_access_token(
 
 async def validate_refresh_token(token: str, session: AsyncSession) -> dict:
 
-    token_payload = await validate_token_base(token, session)
+    token_payload = await validate_token_base(token)
 
     if token_payload:
         if token_payload.get("type") != "refresh":
-            raise WrongTokenException
+            raise WrongTokenHTTPException
         jwt_blacklist_mngr = JWTBlackList.manager(session)
         exists = await jwt_blacklist_mngr.get_one_or_none(
             {"jti": token_payload.get("jti")}
@@ -134,19 +131,16 @@ async def try_validate_refresh(token: str, session: AsyncSession) -> dict | None
         return None
 
 
-async def try_validate_access(
-    token: str, session: AsyncSession, redis: Redis
-) -> dict | None:
+async def try_validate_access(token: str, redis: Redis) -> dict | None:
     if not token:
         return None
     try:
-        return await validate_access_token(token, session, redis)
+        return await validate_access_token(token, redis)
     except UserAlreadyLogoutException:
         return None
 
 
-async def validate_token_base(token: str, session: AsyncSession) -> dict:
-
+async def validate_token_base(token: str) -> dict:
     payload = decode(token)
     user_id = payload.get("sub")
     exp = payload.get("exp")
@@ -156,18 +150,12 @@ async def validate_token_base(token: str, session: AsyncSession) -> dict:
     exp_time = datetime.fromtimestamp(int(exp), tz=timezone.utc)
 
     if not t or not jti or not user_id:
-        raise WrongTokenException
+        raise WrongTokenHTTPException
 
     if t not in ("access", "refresh"):
-        raise WrongTokenException
+        raise WrongTokenHTTPException
 
     if (not exp) or (exp_time < datetime.now(timezone.utc)):
-        raise TokenExpiredException
-
-    user_mngr = User.manager(session)
-    user = await user_mngr.get_one_or_none({"id": user_id})
-
-    if not user:
-        raise UserNotExistsException
+        raise TokenExpiredHTTPException
 
     return payload

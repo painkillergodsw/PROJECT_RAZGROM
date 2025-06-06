@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from redis.asyncio import Redis
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from jwcrypto import jwk
 from config import config
@@ -17,7 +17,7 @@ from schemas import (
 
 from db.dep.depends import get_session
 from models import User
-from HTTPExceptions import UserAlreadyExistsException
+from HTTPExceptions import UserAlreadyExistsHTTPException
 from depends import (
     authenticate,
     get_user_from_refresh,
@@ -42,7 +42,7 @@ async def registrate(
         filters={"username": user_data.username}
     )
     if exist_user:
-        raise UserAlreadyExistsException
+        raise UserAlreadyExistsHTTPException
 
     user = await user_mngr.add(user_data)
     access_token = create_access_token({"sub": str(user.id), "role": user.role.name})

@@ -2,5 +2,7 @@
 app/services/auth_service/certs/
 app/services/auth_service/.env
 app/services/auth_service/.env_db
+app/services/core_service/.env
+app/services/core_service/.env_db
 .venv
 __pycache__/

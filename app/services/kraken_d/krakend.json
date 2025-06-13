@@ -9,6 +9,7 @@
       "return_error_msg": true
     }
   },
+
   "endpoints": [
     {
       "endpoint": "/api/v1/users/registrate",
@@ -124,6 +125,23 @@
           "url_pattern": "users/me",
           "host": [
             "http://auth_service:8228"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/core/create-project",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "core/create-project",
+          "host": [
+            "http://core_service:8229"
           ],
           "extra_config": {
             "backend/http": {

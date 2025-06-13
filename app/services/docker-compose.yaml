@@ -5,20 +5,28 @@ services:
     container_name: db_auth_service
     restart: unless-stopped
     volumes:
-      - dbfile:/var/lib/mysql
+      - auth:/var/lib/mysql
     env_file:
       - auth_service/.env_db
     networks:
       - app
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
 
   auth_service:
     container_name: auth_service
     build:
       context: auth_service/
       dockerfile: ./Dockerfile
+
     depends_on:
-      - db_auth_service
-      - redis
+      db_auth_service:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
     env_file:
       - auth_service/.env
     networks:
@@ -30,6 +38,43 @@ services:
       interval: 5s
       retries: 20
 
+  db_core_service:
+    image: mysql:9.3
+    container_name: db_core_service
+    command:
+      - "--port=3307"
+    restart: unless-stopped
+    volumes:
+      - core:/var/lib/mysql
+    env_file:
+      - core_service/.env_db
+    networks:
+      - app
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 10s
+        retries: 10
+
+  core_service:
+    container_name: core_service
+    build:
+      context: core_service/
+      dockerfile: ./Dockerfile
+    depends_on:
+      db_core_service:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    env_file:
+      - core_service/.env
+    networks:
+      - app
+
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://core_service:8229/core/health_check" ]
+      interval: 5s
+      retries: 20
 
   kraken_d:
     container_name: kraken_d
@@ -59,5 +104,7 @@ networks:
     driver: bridge
 
 volumes:
-  dbfile:
+  auth:
+    driver: local
+  core:
     driver: local

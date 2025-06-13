@@ -43,7 +43,7 @@ async def get_tokens_for_logout(
 
     if access_token_payload:
         user_from_access = user_mngr.get_one_or_none(
-            {"id": refresh_token_payload.get("sub")}
+            {"id": access_token_payload.get("sub")}
         )
         if not user_from_access:
             raise UserNotExistsHTTPException

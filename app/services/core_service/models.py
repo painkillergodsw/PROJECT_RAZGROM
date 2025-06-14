@@ -9,7 +9,9 @@ class Project(Base):
     _manager_cls = ProjectManager
     user_id: Mapped[int] = mapped_column(Integer(), nullable=False)
     name: Mapped[str] = mapped_column(String(length=50))
-    main_domains: Mapped[list["MainDomain"]] = relationship(back_populates="project")
+    main_domains: Mapped[list["MainDomain"]] = relationship(
+        back_populates="project", lazy="selectin"
+    )
 
 
 class MainDomain(Base):

@@ -66,8 +66,6 @@ class BaseManager:
     async def get_one_or_none(
         self,
         filters: BaseModel | dict,
-        selectinload_attr: str | None = None,
-        selectinload_f: bool = False,
     ):
         filter_dict = (
             filters.model_dump(exclude_unset=True)
@@ -77,11 +75,6 @@ class BaseManager:
 
         try:
             query = select(self.model_cls).filter_by(**filter_dict)
-            if selectinload_f:
-                query = query.options(
-                    selectinload(getattr(self.model_cls, selectinload_attr))
-                )
-
             result = await self._session.execute(query)
             record = result.scalar_one_or_none()
             return record
@@ -92,8 +85,6 @@ class BaseManager:
     async def get_list(
         self,
         filters: BaseModel | dict,
-        selectinload_attr: str | None = None,
-        selectinload_f: bool = False,
     ):
         filter_dict = (
             filters.model_dump(exclude_unset=True)
@@ -103,10 +94,6 @@ class BaseManager:
 
         try:
             query = select(self.model_cls).filter_by(**filter_dict)
-            if selectinload_f:
-                query = query.options(
-                    selectinload(getattr(self.model_cls, selectinload_attr))
-                )
             result = await self._session.execute(query)
             record = result.scalars().all()
             return record

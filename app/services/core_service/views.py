@@ -25,7 +25,6 @@ async def create_project(
             for m_domain in project_schema.main_domains
         ]
     )
-
     main_domains = await main_domain_mngr.get_list({"project_id": project.id})
     return ProjectSchema(
         name=project.name,

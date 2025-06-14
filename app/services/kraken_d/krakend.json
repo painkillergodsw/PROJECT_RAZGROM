@@ -171,6 +171,82 @@
           }
         }
       ]
+    },
+    {
+      "endpoint": "/api/v1/core/get-project/{project_id}",
+      "method": "GET",
+      "input_headers": [
+        "x-jwt-jti",
+        "x-jwt-role",
+        "x-jwt-sub"
+      ],
+      "extra_config":
+      {
+        "auth/validator":
+        {
+          "alg": "RS256",
+          "jwk_url": "http://auth_service:8228/users/tech/pubkey",
+          "cache": true,
+          "operation_debug": true,
+          "disable_jwk_security": true,
+          "propagate_claims": [
+            ["jti", "x-jwt-jti"],
+            ["role", "x-jwt-role"],
+            ["sub", "x-jwt-sub"]
+          ]
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "core/get-project/{project_id}",
+          "host": [
+            "http://core_service:8229"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/core/get-projects",
+      "method": "GET",
+      "input_headers": [
+        "x-jwt-jti",
+        "x-jwt-role",
+        "x-jwt-sub"
+      ],
+      "extra_config":
+      {
+        "auth/validator":
+        {
+          "alg": "RS256",
+          "jwk_url": "http://auth_service:8228/users/tech/pubkey",
+          "cache": true,
+          "operation_debug": true,
+          "disable_jwk_security": true,
+          "propagate_claims": [
+            ["jti", "x-jwt-jti"],
+            ["role", "x-jwt-role"],
+            ["sub", "x-jwt-sub"]
+          ]
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "core/get-projects",
+          "host": [
+            "http://core_service:8229"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
     }
   ]
 }

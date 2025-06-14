@@ -12,9 +12,17 @@ class UserSchema(BaseModel):
     role: str
 
 
-class CreateMainDomain(BaseModel): ...
-
-
 class CreateProject(BaseModel):
     name: str
-    main_domain_lst: list[CreateMainDomain]
+    main_domains: list[str]
+
+
+class MainDomainSchema(BaseModel):
+    id: int
+    domain: str
+
+
+class ProjectSchema(BaseModel):
+    id: int
+    name: str
+    main_domains: list[MainDomainSchema]

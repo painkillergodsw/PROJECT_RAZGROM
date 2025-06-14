@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Body
 
+from HTTPExceptions import project_not_exists
 from schemas import ProjectSchema, MainDomainSchema
 from models import Project, MainDomain
 from db.dep.depends import get_session
@@ -44,7 +45,6 @@ async def get_project(
 ):
     project_mgnr = Project.manager(session)
     project = await project_mgnr.get_one_or_none({"user_id": user.id, "id": project_id})
-    print(project)
     if project:
         return ProjectSchema(
             name=project.name,
@@ -54,7 +54,7 @@ async def get_project(
                 for main_domain in project.main_domains
             ],
         )
-    raise
+    raise project_not_exists
 
 
 @router.get("/get-projects")
@@ -79,10 +79,6 @@ async def get_projects(
         )
 
     return {"projects": projects_response}
-
-
-### TODO(ARCHIVE PROJECTS, REMOVE MAINDOMAIN)
-
 
 @router.get("/health_check")
 async def health_check() -> dict:

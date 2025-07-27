@@ -8,11 +8,11 @@ env_path = os.path.join(BASE_DIR, ".env")
 
 
 class Kafka(BaseSettings):
-    # model_config = SettingsConfigDict(env_file=env_path, extra="ignore")
-    address: str = "kafka:9092"
-    consume_t: str = "subdomains.task"
-    produce_t: str = "subdomains.subfinder.done"
-    group_id: str = "subdomain"
+    model_config = SettingsConfigDict(env_file=env_path, extra="ignore")
+    ADDRESS: str
+    CONSUME_T: str
+    PRODUCE_T: str
+    GROUP_ID: str
 
 class Config(BaseSettings):
     kafka: Kafka = Kafka()

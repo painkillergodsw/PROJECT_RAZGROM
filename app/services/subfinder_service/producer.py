@@ -19,7 +19,7 @@ class BaseProducer:
 
     async def start(self):
         self.producer = AIOKafkaProducer(
-            bootstrap_servers=config.kafka.address,
+            bootstrap_servers=config.kafka.ADDRESS,
             value_serializer=self.value_serializer,
             key_serializer=self.key_serializer
         )

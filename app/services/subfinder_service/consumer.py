@@ -10,7 +10,7 @@ class BaseConsumer(AIOKafkaConsumer):
     def __init__(self, topic):
         super().__init__(
             topic,
-            bootstrap_servers=config.kafka.address,
+            bootstrap_servers=config.kafka.ADDRESS,
             value_deserializer=self.deserializer,
             key_deserializer=self.deserializer
         )
@@ -26,23 +26,23 @@ class BaseConsumer(AIOKafkaConsumer):
                 return message
 
 async def consume(producer):
-    consumer = BaseConsumer(config.kafka.consume_t)
+    consumer = BaseConsumer(config.kafka.CONSUME_T)
     await consumer.start()
     try:
         async for msg in consumer:
             subdomains = await scan_domains(msg.value["domains"])
-            await producer.send(config.kafka.produce_t, subdomains, msg.key)
+            await producer.send(config.kafka.PRODUCE_T, subdomains, msg.key)
     finally:
         await consumer.stop()
 
 
 async def create_topics():
-    admin_client = AIOKafkaAdminClient(bootstrap_servers=config.kafka.address)
+    admin_client = AIOKafkaAdminClient(bootstrap_servers=config.kafka.ADDRESS)
     await admin_client.start()
 
     try:
         existing_topics = await admin_client.list_topics()
-        topics_name = [config.kafka.consume_t, config.kafka.produce_t]
+        topics_name = [config.kafka.CONSUME_T, config.kafka.PRODUCE_T]
         topics_to_create = []
         for topic_name in topics_name:
             if topic_name not in existing_topics:

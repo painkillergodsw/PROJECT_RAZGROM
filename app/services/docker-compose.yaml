@@ -34,7 +34,7 @@ services:
       timeout: 5s
       retries: 5
 
-
+# for test kafka
   kafka-ui:
     image: redpandadata/console:latest
     container_name: kafka_ui

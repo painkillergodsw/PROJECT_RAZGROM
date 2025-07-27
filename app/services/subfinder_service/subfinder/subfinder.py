@@ -1,4 +1,3 @@
-import contextlib
 import os
 import subprocess
 import tempfile
@@ -11,7 +10,7 @@ binary_path = CUR_DIR / "subfinder"
 
 
 class SDK:
-    def scan_domains(self, domains: list[str]):
+    async def scan_domains(self, domains: list[str]):
         with TempDomainsFile(domains) as domains_file:
              result = subprocess.run(
                 [binary_path, "-dL", domains_file, "-silent", "-json"],
@@ -23,8 +22,7 @@ class SDK:
         return self.__prepare_result(result.stdout)
 
 
-    def scan_domain(self, domain: str):
-
+    async def scan_domain(self, domain: str):
         result = subprocess.run(
             [binary_path, "-d", domain, "-silent", "-json"],
             capture_output=True,
@@ -49,7 +47,6 @@ class SDK:
             line = json.loads(line)
 
             result[line.get("input")].append(line.get("host"))
-
         return dict(result)
 
 

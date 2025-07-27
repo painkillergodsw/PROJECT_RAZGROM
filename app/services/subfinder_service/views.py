@@ -10,7 +10,7 @@ async def health_check() -> dict:
 
 
 @router.get("/test_background_task")
-async def bg_task_test(background_tasks: BackgroundTasks) -> dict:
+async def bg_task_test() -> dict:
     start_time = time.perf_counter()
 
     subfinder = SDK()

@@ -1,4 +1,52 @@
 services:
+  subdomain_service:
+    container_name: subdomain_service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    build:
+      context: subfinder_service/
+      dockerfile: ./Dockerfile
+    ports:
+      - "8230:8230"
+
+  kafka:
+    image: bitnami/kafka:3.7
+    container_name: kafka
+    restart: unless-stopped
+    environment:
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_NODE_ID=1
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    networks:
+      - app
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server", "kafka:9092", "--list" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  kafka-ui:
+    image: redpandadata/console:latest
+    container_name: kafka_ui
+    restart: unless-stopped
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+    ports:
+      - "8099:8080"
+    depends_on:
+      - kafka
+    networks:
+      - app
 
   db_auth_service:
     image: mysql:9.3

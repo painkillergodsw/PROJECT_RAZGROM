@@ -19,5 +19,5 @@
 2. [Основной сервис (core_service)](app/services/core_service/README.md)
 2. [Api Gate Away (kraken D) ](app/services/kraken_d/README.md)
 
-DRAFT
+DRAFT (какой дебил это спроектировал)
 >![project_razgrom.png](project_razgrom.png)

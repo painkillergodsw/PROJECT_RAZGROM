@@ -1,7 +1,5 @@
-from fastapi import APIRouter, BackgroundTasks
-from subfinder.subfinder import SDK
+from fastapi import APIRouter
 
-import time
 router = APIRouter(prefix="/subfinder")
 
 @router.get("/health_check")

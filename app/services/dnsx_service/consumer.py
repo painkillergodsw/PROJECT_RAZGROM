@@ -2,8 +2,9 @@ import json
 from json import JSONDecodeError
 from aiokafka import AIOKafkaConsumer
 from aiokafka.admin import AIOKafkaAdminClient, NewTopic
-from subfinder.tasks import scan_domains
+from dnsx.tasks import scan_domains
 from config import config
+
 
 class BaseConsumer(AIOKafkaConsumer):
     def __init__(self, topic):
@@ -52,7 +53,6 @@ async def create_topics():
                     replication_factor=1
                     )
                 )
-
         await admin_client.create_topics(topics_to_create)
 
     finally:

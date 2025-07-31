@@ -17,7 +17,8 @@
 Продукт состоит из микро сервисной архитектуры:
 1. [Сервис работы с пользователями jwt (auth_service)](app/services/auth_service/README.md)
 2. [Основной сервис (core_service)](app/services/core_service/README.md)
-2. [Api Gate Away (kraken D) ](app/services/kraken_d/README.md)
+3. [Api Gate Away (kraken D) ](app/services/kraken_d/README.md)
+4. [Сервис для пассивного поиска поддоменов (subfinder_service)](app/services/subfinder_service/README.md)
+5. [Сервис для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
 
-DRAFT (какой дебил это спроектировал)
 >![project_razgrom.png](project_razgrom.png)

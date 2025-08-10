@@ -1,5 +1,7 @@
+import asyncio
 import os
 import subprocess
+
 import tempfile
 from pathlib import Path
 from collections import defaultdict
@@ -16,14 +18,22 @@ class SDK:
             sub_parts = self.__get_default_sub_parts(wordlist_path)
 
         with TempDomainsFile(domains, sub_parts) as domains_file:
-            result = subprocess.run(
-                [binary_path, "-l", domains_file],
-                capture_output=True,
-                text=True,
-                check=True,
-                stdin=subprocess.DEVNULL
+            process = await asyncio.create_subprocess_exec(
+                binary_path, "-l", domains_file,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL,
             )
-        return self.__prepare_result(result.stdout)
+
+            stdout, stderr = await process.communicate()
+            stdout = stdout.decode()
+            stderr = stderr.decode()
+
+            if process.returncode != 0:
+                print(f"Ошибка сканирования доменов {domains}: {stderr}")
+                return {}
+
+        return self.__prepare_result(stdout)
 
     @staticmethod
     def __get_default_sub_parts(path: Path):

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from json import JSONDecodeError
 from aiokafka import AIOKafkaConsumer
@@ -29,8 +30,7 @@ async def consume(producer):
     await consumer.start()
     try:
         async for msg in consumer:
-            subdomains = await scan_domains(msg.value["domains"])
-            await producer.send(config.kafka.PRODUCE_T, subdomains, msg.key)
+            asyncio.create_task(handle_msg(producer, msg))
     finally:
         await consumer.stop()
 
@@ -59,3 +59,12 @@ async def create_topics():
         await admin_client.close()
 
 
+
+async def handle_msg(producer, msg):
+
+    try:
+        subdomains = await scan_domains(msg.value["domains"])
+        await producer.send(config.kafka.PRODUCE_T, subdomains, msg.key)
+
+    except Exception as e:
+        print(str(e))

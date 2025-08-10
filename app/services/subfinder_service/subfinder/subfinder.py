@@ -1,3 +1,4 @@
+import asyncio
 import os
 import subprocess
 import tempfile
@@ -12,25 +13,33 @@ binary_path = CUR_DIR / "subfinder"
 class SDK:
     async def scan_domains(self, domains: list[str]):
         with TempDomainsFile(domains) as domains_file:
-             result = subprocess.run(
-                [binary_path, "-dL", domains_file, "-silent", "-json"],
-                capture_output=True,
-                text=True,
-                check=True
+
+            process = await asyncio.create_subprocess_exec(
+                binary_path, "-dL", domains_file, "-silent", "-json",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
             )
 
-        return self.__prepare_result(result.stdout)
+            stdout, stderr = await process.communicate()
+            stdout = stdout.decode()
+            stderr = stderr.decode()
+
+        if process.returncode != 0:
+            print(f"Ошибка сканирования доменов {domains}: {stderr}")
+            return {}
+
+        return self.__prepare_result(stdout)
 
 
-    async def scan_domain(self, domain: str):
-        result = subprocess.run(
-            [binary_path, "-d", domain, "-silent", "-json"],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-
-        return self.__prepare_result(result.stdout)
+    # async def scan_domain(self, domain: str):
+    #     result = subprocess.run(
+    #         [binary_path, "-d", domain, "-silent", "-json"],
+    #         capture_output=True,
+    #         text=True,
+    #         check=True
+    #     )
+    #
+    #     return self.__prepare_result(result.stdout)
 
 
     @staticmethod

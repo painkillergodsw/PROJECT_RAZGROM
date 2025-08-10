@@ -19,13 +19,15 @@ class SDK:
             process = await asyncio.create_subprocess_exec(
                 binary_path, "-u", domain, "-w", wordlist, "-r", "--random-agent",
                 "-o", file.name, "--json", "--no-state", "--threads", "150",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
             )
 
             stdout, stderr = await process.communicate()
 
             if process.returncode != 0:
                 print(f"Ошибка сканирования домена {domain}: {stderr}")
-                return []
+                return {}
             return self.__prepare_result(file)
 
 

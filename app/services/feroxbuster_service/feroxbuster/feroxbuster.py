@@ -1,5 +1,6 @@
 import json
 import asyncio
+from collections import defaultdict
 from tempfile import NamedTemporaryFile
 from pathlib import Path
 
@@ -29,18 +30,18 @@ class SDK:
 
 
     @staticmethod
-    def __prepare_result(file, filtered_status=(404, )) -> list[list[str|int]]:
-        result = []
-        for line in file.readlines():
-            if not line: continue
+    def __prepare_result(file, filtered_status=(404,)) -> dict[int, list[str]]:
+        result = defaultdict(list)
+        for line in file:
+            if not line.strip():
+                continue
 
             obj = json.loads(line)
 
-            if obj['type'] == "response":
-                if obj['status'] not in filtered_status:
-                    result.append([obj['url'], obj["status"]])
+            if obj.get('type') == "response" and obj.get('status') not in filtered_status:
+                result[obj['status']].append(obj['url'])
 
-        return result
+        return dict(result)
 
     @staticmethod
     def __get_default_wordlist():

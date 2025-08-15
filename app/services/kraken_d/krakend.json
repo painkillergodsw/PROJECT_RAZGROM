@@ -283,6 +283,7 @@
         }
       ]
     },
+
     {
       "endpoint": "/api/v1/core/docs/swagger/",
       "method": "GET",

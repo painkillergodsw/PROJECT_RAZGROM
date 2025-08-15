@@ -26,3 +26,6 @@ class ProjectSchema(BaseModel):
     id: int
     name: str
     main_domains: list[MainDomainSchema]
+
+class ProjectsSchema(BaseModel):
+    projects: list[ProjectSchema]

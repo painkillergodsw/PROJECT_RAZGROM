@@ -23,7 +23,10 @@ async def start(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=start)
+app = FastAPI(
+    lifespan=start,
+    openapi_url="/api/v1/core/docs/openapi.json"
+)
 app.include_router(router)
 
 if __name__ == "__main__":

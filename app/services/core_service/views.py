@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Body
 
 from HTTPExceptions import project_not_exists
-from schemas import ProjectSchema, MainDomainSchema
+from schemas import ProjectSchema, MainDomainSchema, ProjectsSchema
 from models import Project, MainDomain
 from db.dep.depends import get_session
 from schemas import UserSchema, CreateProject
@@ -15,7 +15,7 @@ async def create_project(
     project_schema: CreateProject = Body(),
     user: UserSchema = Depends(get_user),
     session=Depends(get_session),
-):
+) -> ProjectSchema:
     project_mgnr = Project.manager(session)
     main_domain_mngr = MainDomain.manager(session)
     project = await project_mgnr.add({"name": project_schema.name, "user_id": user.id})
@@ -41,7 +41,7 @@ async def get_project(
     project_id: int,
     user: UserSchema = Depends(get_user),
     session=Depends(get_session),
-):
+) -> ProjectSchema:
     project_mgnr = Project.manager(session)
     project = await project_mgnr.get_one_or_none({"user_id": user.id, "id": project_id})
     if project:
@@ -60,7 +60,7 @@ async def get_project(
 async def get_projects(
     user: UserSchema = Depends(get_user),
     session=Depends(get_session),
-):
+) -> ProjectsSchema:
     prjct_mngr = Project.manager(session)
     projects = await prjct_mngr.get_list({"user_id": user.id})
 
@@ -77,7 +77,7 @@ async def get_projects(
             )
         )
 
-    return {"projects": projects_response}
+    return ProjectsSchema(projects=projects_response)
 
 
 @router.get("/health_check")

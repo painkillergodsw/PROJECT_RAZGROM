@@ -97,6 +97,41 @@
       ]
     },
     {
+      "endpoint": "/api/v1/users/docs/swagger",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "docs",
+          "host": [
+            "http://auth_service:8228"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/users/docs/openapi.json",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/api/v1/users/docs/openapi.json",
+          "host": [
+            "http://auth_service:8228"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
       "endpoint": "/api/v1/users/me",
       "method": "GET",
       "input_headers": [
@@ -237,6 +272,41 @@
       "backend": [
         {
           "url_pattern": "core/get-projects",
+          "host": [
+            "http://core_service:8229"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/core/docs/swagger/",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/docs",
+          "host": [
+            "http://core_service:8229"
+          ],
+          "extra_config": {
+            "backend/http": {
+              "return_error_code": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/v1/core/docs/openapi.json",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/api/v1/core/docs/openapi.json",
           "host": [
             "http://core_service:8229"
           ],

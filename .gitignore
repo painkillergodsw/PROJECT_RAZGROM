@@ -1,4 +1,4 @@
 .idea/
 app/services/auth_service/certs/
 .venv
-__pycache__
+__pycache_

@@ -8,6 +8,7 @@ from config import config
 import redis.asyncio as redis
 from redis.exceptions import ConnectionError
 from logger import logger as l
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager

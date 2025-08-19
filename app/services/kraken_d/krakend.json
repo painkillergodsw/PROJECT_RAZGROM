@@ -7,7 +7,29 @@
   "extra_config": {
     "router": {
       "return_error_msg": true
-    }
+    },
+    "github_com/devopsfaith/krakend-cors": {
+      "allow_origins": [
+        "http://localhost:5173"
+      ],
+      "allow_methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS"
+      ],
+      "allow_headers": [
+        "Origin",
+        "Authorization",
+        "Content-Type"
+      ],
+      "expose_headers": [
+        "Content-Length",
+        "Content-Type"
+      ],
+      "max_age": "12h",
+      "allow_credentials": true
   },
 
   "endpoints": [

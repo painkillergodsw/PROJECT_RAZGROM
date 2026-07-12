@@ -4,7 +4,7 @@
 Система использует как и open-source решения, так и собственные разработки.  
 
 ### Внешний периметр DAST
-   - `Сбор поддоменов` Используются пассивные и активные методы для сбора информации о поддоменах.
+   - `Сбор поддоменов` Используются утилиты пассивного и активного скана для сбора информации о поддоменах.
    - `Рекогносцировка и анализ веб-контента` Поиск страниц, анализ содержимого, извлечение HTTP-заголовков, определение используемых технологий и CMS.
    - `Поиск уязвимостей` Выявление типовых уязвимостей веб-приложений, конфигураций и инфраструктуры исходя из известных шаблонов атак.
 
@@ -18,7 +18,7 @@
 1. [Сервис работы с пользователями jwt (auth_service)](app/services/auth_service/README.md)
 2. [Основной сервис (core_service)](app/services/core_service/README.md)
 3. [Api Gate Away (krakenD) ](app/services/kraken_d/README.md)
-4. [Сервис для пассивного поиска поддоменов (subfinder_service)](app/services/subfinder_service/README.md)
-5. [Сервис для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
+4. [Сервис обертка над subfiender для пассивного поиска поддоменов (subfinder_service)](app/services/subfinder_service/README.md)
+5. [Сервис обертка над dnsx для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
 
 >![project_razgrom.png](project_razgrom.png)

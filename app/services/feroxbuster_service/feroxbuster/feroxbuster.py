@@ -34,6 +34,9 @@ class SDK:
     @staticmethod
     def __prepare_result(file, filtered_status=(404,)) -> dict[int, list[str]]:
         result = defaultdict(list)
+        
+        file.seek(0)
+
         for line in file:
             if not line.strip():
                 continue

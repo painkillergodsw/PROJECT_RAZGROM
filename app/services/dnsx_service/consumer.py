@@ -60,7 +60,6 @@ async def create_topics():
 
 
 async def handle_msg(producer, msg):
-
     try:
         subdomains = await scan_domains(msg.value["domains"])
         await producer.send(config.kafka.PRODUCE_T, subdomains, msg.key)

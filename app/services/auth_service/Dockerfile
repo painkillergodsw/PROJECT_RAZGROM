@@ -24,6 +24,8 @@ COPY . .
 
 RUN poetry install --no-root
 
+RUN sed -i 's/\r$//' migrate.sh
+
 RUN chmod +x ./migrate.sh
 
 ENTRYPOINT ["./migrate.sh"]

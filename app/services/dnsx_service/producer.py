@@ -15,7 +15,7 @@ class BaseProducer:
     def key_serializer(key):
         if key is None:
             return None
-        return str(key).encode("utf-8")  # любое значение → строка → байты
+        return str(key).encode("utf-8") 
 
     async def start(self):
         self.producer = AIOKafkaProducer(

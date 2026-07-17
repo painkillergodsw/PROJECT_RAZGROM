@@ -20,5 +20,3 @@ class MainDomain(Base):
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False)
     project: Mapped["Project"] = relationship(back_populates="main_domains")
 
-
-# class UtilNameSettings(Base):

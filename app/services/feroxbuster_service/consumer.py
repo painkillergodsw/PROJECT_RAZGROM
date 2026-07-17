@@ -21,7 +21,7 @@ class BaseConsumer(AIOKafkaConsumer):
         try:
             return json.loads(message.decode("utf-8"))
         except JSONDecodeError:
-            if isinstance(message, bytes):
+            if isinstance(message, bytes):  
                 return message.decode("utf-8")
             else:
                 return message

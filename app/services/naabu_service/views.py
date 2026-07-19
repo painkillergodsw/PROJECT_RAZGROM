@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from dnsx.tasks import scan_domains
-router = APIRouter(prefix="/dnsx")
+
+router = APIRouter(prefix="/naabu")
 
 @router.get("/health_check")
 async def health_check() -> dict:

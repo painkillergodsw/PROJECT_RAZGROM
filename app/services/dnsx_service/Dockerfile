@@ -11,8 +11,9 @@ RUN apt-get update && \
     apt-get install -y netcat-openbsd wget unzip curl
 
 
-COPY pyproject.toml poetry.lock ./
-COPY . .
+COPY dnsx_service/pyproject.toml dnsx_service/poetry.lock ./
+COPY common/ ./common/
+COPY dnsx_service/ .
 
 ENV DNSX_VERSION=1.2.2
 

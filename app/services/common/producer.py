@@ -1,10 +1,10 @@
 import json
 import logging as l
 from aiokafka import AIOKafkaProducer
-from config import config
 
 class BaseProducer:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.producer = None
 
     @staticmethod
@@ -15,11 +15,11 @@ class BaseProducer:
     def key_serializer(key):
         if key is None:
             return None
-        return str(key).encode("utf-8") 
+        return str(key).encode("utf-8")
 
     async def start(self):
         self.producer = AIOKafkaProducer(
-            bootstrap_servers=config.kafka.ADDRESS,
+            bootstrap_servers=self.config.kafka.ADDRESS,
             value_serializer=self.value_serializer,
             key_serializer=self.key_serializer
         )

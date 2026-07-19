@@ -1,4 +1,4 @@
-from feroxbuster.tasks import scan_domain
+from naabu.tasks import scan_ports
 from config import config
 from common.consumer import base_create_topics, base_consume
 
@@ -11,8 +11,8 @@ async def consume(producer):
 async def handle_msg(producer, msg):
 
     try:
-        pages = await scan_domain(msg.value["domain"])
-        result = {msg.value["domain"]: pages}
+        host_ports = await scan_ports(msg.value["assets"])
+        result = host_ports
         await producer.send(config.kafka.PRODUCE_T, result, msg.key)
 
     except Exception as e:

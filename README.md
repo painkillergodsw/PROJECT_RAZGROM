@@ -17,6 +17,6 @@
 1. [Api Gateway (krakenD) ](app/services/kraken_d/README.md)
 2. [Основной сервис-контроллер (core_service)](app/services/core_service/README.md)
 3. [Сервис работы с пользователями (auth_service)](app/services/auth_service/README.md)
-4. [Сервис обертка над dnsx для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
-5. [Сервис обертка над feroxbuster для сбора страниц (feroxbuster_service)](app/services/feroxbuster_service/README.md)
+4. [Сервис обертка над feroxbuster для сбора страниц (feroxbuster_service)](app/services/feroxbuster_service/README.md)
+5. [Сервис обертка над dnsx для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
 6. [Сервис обертка над subfiender для пассивного поиска поддоменов (subfinder_service)](app/services/subfinder_service/README.md)

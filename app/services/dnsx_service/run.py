@@ -1,15 +1,15 @@
 from contextlib import asynccontextmanager
-from producer import BaseProducer
+from common.producer import BaseProducer
 from consumer import create_topics, consume
 from fastapi import FastAPI
 from views import router
 import asyncio
 import uvicorn
-
+from config import config
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    producer = BaseProducer()
+    producer = BaseProducer(config)
     await create_topics()
     await producer.start()
     task = asyncio.create_task(consume(producer))

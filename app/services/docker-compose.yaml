@@ -8,10 +8,15 @@ services:
     networks:
       - app
     build:
-      context: dnsx_service/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: dnsx_service/Dockerfile
     ports:
       - "8231:8231"
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://dnsx_service:8231/dnsx/health_check" ]
+      interval: 60s
+      retries: 5
 
   subfinder_service:
     container_name: subfinder_service
@@ -22,11 +27,15 @@ services:
     networks:
       - app
     build:
-      context: subfinder_service/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: subfinder_service/Dockerfile
     ports:
       - "8230:8230"
-
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://subfinder_service:8230/subfinder/health_check" ]
+      interval: 60s
+      retries: 5
   feroxbuster_service:
     container_name: feroxbuster_service
     depends_on:
@@ -40,6 +49,11 @@ services:
       dockerfile: feroxbuster_service/Dockerfile
     ports:
       - "8232:8232"
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://feroxbuster_service:8232/feroxbuster/health_check" ]
+      interval: 60s
+      retries: 5
 
   naabu_service:
     container_name: naabu_service
@@ -56,7 +70,12 @@ services:
       context: .
       dockerfile: naabu_service/Dockerfile
     ports:
-      - "8228:8228"
+      - "8337:8337"
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://naabu_service:8337/naabu/health_check" ]
+      interval: 60s
+      retries: 5
 
   kafka:
     image: apache/kafka:3.7.0
@@ -112,7 +131,7 @@ services:
       - app
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      timeout: 5s
+      timeout: 60s
       retries: 5
 
   auth_service:
@@ -135,7 +154,7 @@ services:
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://auth_service:8228/users/health_check" ]
-      interval: 5s
+      interval: 60s
       retries: 5
 
   db_core_service:
@@ -172,7 +191,7 @@ services:
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://core_service:8229/core/health_check" ]
-      interval: 5s
+      interval: 60s
       retries: 5
 
   kraken_d:

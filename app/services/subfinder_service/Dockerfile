@@ -11,8 +11,9 @@ RUN apt-get update && \
     apt-get install -y netcat-openbsd wget unzip curl
 
 
-COPY pyproject.toml poetry.lock ./
-COPY . .
+COPY subfinder_service/pyproject.toml subfinder_service/poetry.lock ./
+COPY common/ ./common/
+COPY subfinder_service/ .
 
 ENV SUBFINDER_VERSION=2.8.0
 

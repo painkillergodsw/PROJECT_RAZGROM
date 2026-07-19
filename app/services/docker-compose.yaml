@@ -41,6 +41,23 @@ services:
     ports:
       - "8232:8232"
 
+  naabu_service:
+    container_name: naabu_service
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: naabu_service/Dockerfile
+    ports:
+      - "8228:8228"
+
   kafka:
     image: apache/kafka:3.7.0
     container_name: kafka

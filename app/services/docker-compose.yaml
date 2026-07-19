@@ -36,8 +36,8 @@ services:
     networks:
       - app
     build:
-      context: feroxbuster_service/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: feroxbuster_service/Dockerfile
     ports:
       - "8232:8232"
 

@@ -76,6 +76,28 @@ services:
         [ "CMD", "curl", "-f", "http://naabu_service:8337/naabu/health_check" ]
       interval: 60s
       retries: 5
+  
+  nmap_service:
+    container_name: nmap_service
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: nmap_service/Dockerfile
+    ports:
+      - "9001:9001"
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://nmap_service:9001/nmap/health_check" ]
+      interval: 60s
+      retries: 5
 
   kafka:
     image: apache/kafka:3.7.0

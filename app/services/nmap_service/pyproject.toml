@@ -1,9 +1,9 @@
 [project]
-name = "naabu-service"
+name = "nmap-service"
 version = "1.0.0"
 description = ""
 authors = [
-    {name = "pgodsewostyanow", email = "p.god.sw@gmail.com"}
+    {name = "painkillergodsw",email = "pgod.sw@gmail.com"}
 ]
 requires-python = ">=3.13"
 dependencies = [
@@ -11,7 +11,8 @@ dependencies = [
     "aiokafka (>=0.14.0,<0.15.0)",
     "pydantic (>=2.13.4,<3.0.0)",
     "pydantic-settings (>=2.14.2,<3.0.0)",
-    "uvicorn (>=0.51.0,<0.52.0)"
+    "uvicorn (>=0.51.0,<0.52.0)",
+    "python-snappy (>=0.7.3,<0.8.0)"
 ]
 
 

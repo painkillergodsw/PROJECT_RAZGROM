@@ -11,8 +11,13 @@ async def consume(producer):
 async def handle_msg(producer, msg):
 
     try:
-        pages = await scan_domain(msg.value["domain"])
-        result = {msg.value["domain"]: pages}
+        result = []
+        for domain in msg.value["domains"]:
+            print(domain)
+            pages = await scan_domain(domain)
+            scan_result = {domain: pages}
+            result.append(scan_result)
+
         await producer.send(config.kafka.PRODUCE_T, result, msg.key)
 
     except Exception as e:

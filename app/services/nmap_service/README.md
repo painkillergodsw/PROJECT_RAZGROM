@@ -1,0 +1,1 @@
+Active port scan + passive/active service scan

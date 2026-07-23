@@ -1,1 +1,1 @@
-Wordlist based domain discovery
+Word list based domain discovery

@@ -13,7 +13,6 @@ async def handle_msg(producer, msg):
     try:
         result = []
         for domain in msg.value["domains"]:
-            print(domain)
             pages = await scan_domain(domain)
             scan_result = {domain: pages}
             result.append(scan_result)

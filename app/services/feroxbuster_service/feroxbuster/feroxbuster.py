@@ -18,7 +18,15 @@ class SDK:
         with NamedTemporaryFile(delete=True) as file:
             process = await asyncio.create_subprocess_exec(
                 binary_path, "-u", domain, "-w", wordlist, "-r", "--random-agent",
-                "-o", file.name, "--json", "--no-state", "--threads", "150",
+                "-o", file.name, "--json", "--no-state", "--depth", "10",
+                "-x", "php,html,txt,json,xml,js",
+                "--threads", "200",
+                "--collect-extensions",
+                "--collect-words",
+                "--collect-backups",
+                "--scan-dir-listings",
+                "--smart",         
+
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )

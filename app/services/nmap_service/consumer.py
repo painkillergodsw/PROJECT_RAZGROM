@@ -30,6 +30,8 @@ async def handle_msg(producer, msg):
             await producer.send(config.kafka.PRODUCE_PORT_SCAN_T, scan_result, msg.key)
 
         elif msg.topic == config.kafka.CONSUME_SERVICE_SCAN_T:
+
+            scan_result = [scan_services(a.get("domain"),a.get("ports")) for a in msg.value["asets"]]
             for asset in msg.value["assets"]:
                 domain = asset.get("domain")
                 ports = asset.get("ports")

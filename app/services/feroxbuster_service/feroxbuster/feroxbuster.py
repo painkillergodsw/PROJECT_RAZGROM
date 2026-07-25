@@ -10,7 +10,7 @@ wordlist_path = CUR_DIR / "default_lists" / "base.txt"
 
 
 class SDK:
-    async def scan_domain(self, domain: str, wordlist = None):
+    async def find_endpoints(self, domain: str, wordlist = None):
 
         if not wordlist:
             wordlist = self.__get_default_wordlist()

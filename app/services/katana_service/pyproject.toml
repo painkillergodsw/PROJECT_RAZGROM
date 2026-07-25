@@ -1,0 +1,20 @@
+[project]
+name = "katana-service"
+version = "1.0.0"
+description = ""
+authors = [
+    {name = "painkillergodsw",email = "pgod.sw@gmail.com"}
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[uvicorm] (>=0.140.0,<0.141.0)",
+    "pydantic (>=2.13.4,<3.0.0)",
+    "pydantic-settings (>=2.14.2,<3.0.0)",
+    "aiokafka (>=0.14.0,<0.15.0)",
+    "uvicorn (>=0.51.0,<0.52.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

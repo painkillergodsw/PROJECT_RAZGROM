@@ -1,5 +1,6 @@
 import asyncio
-from feroxbuster.tasks import scan_domain
+
+from katana.tasks import scan_domain
 from config import config
 from common.consumer import base_create_topics, base_consume
 
@@ -13,16 +14,14 @@ async def handle_msg(producer, msg):
 
     try:
         domains = msg.value["domains"]
-        # sync
+
         # result = []
-        # for domain in msg.value["domains"]:
+        # sync
+        # for domain in domains:
         #     pages = await scan_domain(domain)
         #     scan_result = {domain: pages}
         #     result.append(scan_result)
 
-        # await producer.send(config.kafka.PRODUCE_T, result, msg.key)
-
-        # async
         results = await asyncio.gather(
             *(scan_domain(domain) for domain in domains)
         )

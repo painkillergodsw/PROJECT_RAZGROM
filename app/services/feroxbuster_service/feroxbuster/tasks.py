@@ -7,7 +7,7 @@ feroxbuster = SDK()
 
 async def scan_domain(domain: str):
     print(f"Feroxbuster начало скана: {domain}")
-    result = await feroxbuster.scan_domain(domain)
+    result = await feroxbuster.find_endpoints(domain)
     print(f"Feroxbuster скан окончен : {domain}")
 
     return result

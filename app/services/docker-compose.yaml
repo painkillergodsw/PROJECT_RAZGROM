@@ -98,6 +98,24 @@ services:
         [ "CMD", "curl", "-f", "http://nmap_service:9001/nmap/health_check" ]
       interval: 60s
       retries: 5
+  katana_service:
+    container_name: katana_service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: katana_service/Dockerfile
+    ports:
+      - "9002:9002"
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://katana_service:9002/katana/health_check" ]
+      interval: 60s
+      retries: 5
 
   kafka:
     image: apache/kafka:3.7.0

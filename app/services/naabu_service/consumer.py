@@ -11,7 +11,7 @@ async def consume(producer):
 async def handle_msg(producer, msg):
 
     try:
-        host_ports = await scan_ports(msg.value["assets"])
+        host_ports = await scan_ports(msg.value["domains"])
         result = host_ports
         await producer.send(config.kafka.PRODUCE_T, result, msg.key)
 

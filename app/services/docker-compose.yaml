@@ -10,8 +10,6 @@ services:
     build:
       context: .
       dockerfile: dnsx_service/Dockerfile
-    ports:
-      - "8231:8231"
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://dnsx_service:8231/dnsx/health_check" ]
@@ -29,13 +27,12 @@ services:
     build:
       context: .
       dockerfile: subfinder_service/Dockerfile
-    ports:
-      - "8230:8230"
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://subfinder_service:8230/subfinder/health_check" ]
       interval: 60s
       retries: 5
+
   feroxbuster_service:
     container_name: feroxbuster_service
     depends_on:
@@ -47,8 +44,6 @@ services:
     build:
       context: .
       dockerfile: feroxbuster_service/Dockerfile
-    ports:
-      - "8232:8232"
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://feroxbuster_service:8232/feroxbuster/health_check" ]
@@ -69,14 +64,34 @@ services:
     build:
       context: .
       dockerfile: naabu_service/Dockerfile
-    ports:
-      - "8337:8337"
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://naabu_service:8337/naabu/health_check" ]
       interval: 60s
       retries: 5
+
+  screenshoot_service:
+    container_name: screenshoot_service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      - S3_LOGIN=${MINIO_ROOT_USER}
+      - S3_PWD=${MINIO_ROOT_PASSWORD}
+      - S3_ADDR=minio:9000
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: screenshoot_service/Dockerfile
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://screenshoot_service:10000/naabu/health_check" ]
+      interval: 60s
+      retries: 5
   
+
   nmap_service:
     container_name: nmap_service
     cap_add:
@@ -91,13 +106,12 @@ services:
     build:
       context: .
       dockerfile: nmap_service/Dockerfile
-    ports:
-      - "9001:9001"
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://nmap_service:9001/nmap/health_check" ]
       interval: 60s
       retries: 5
+
   katana_service:
     container_name: katana_service
     depends_on:
@@ -109,8 +123,6 @@ services:
     build:
       context: .
       dockerfile: katana_service/Dockerfile
-    ports:
-      - "9002:9002"
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://katana_service:9002/katana/health_check" ]
@@ -213,7 +225,7 @@ services:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 5s
       retries: 5
-
+  
   core_service:
     container_name: core_service
     build:
@@ -254,6 +266,20 @@ services:
     networks:
       - app
 
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - app
+
 networks:
   app:
     driver: bridge
@@ -262,4 +288,6 @@ volumes:
   auth:
     driver: local
   core:
+    driver: local
+  minio_data:
     driver: local

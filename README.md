@@ -22,3 +22,4 @@
 6. [Сервис обертка над dnsx для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
 7. [Сервис обертка над subfiender для пассивного поиска поддоменов (subfinder_service)](app/services/subfinder_service/README.md)
 8. [Сервис обертка над nmap для поиска открытых портов и анализа сервисов на них (nmap_service)](app/services/nmap_service/README.md)
+9. [Сервис обертка над katana для поиска ресурсов на домене: страницы/файлы/js/css и тд (katana_service)](app/services/katana_service/README.md)

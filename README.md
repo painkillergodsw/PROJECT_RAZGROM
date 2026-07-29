@@ -14,8 +14,8 @@
 
 >### Архитектура
 Система состоит из микро-сервисной архитектуры:
-1. [Api Gateway (krakenD)](app/services/kraken_d/README.md)
-2. [Self Hosted S3 (minio)](app/services/docker-compose.yaml#L269)
+1. [Self Hosted S3 (minio)](app/services/docker-compose.yaml#L269)
+2. [Api Gateway (krakenD)](app/services/kraken_d/README.md)
 3. [Основной сервис-контроллер (core_service)](app/services/core_service/README.md)
 4. [Сервис работы с пользователями (auth_service)](app/services/auth_service/README.md)
 5. [Сервис сбора скриншотов страниц (screenshot_service)](app/services/screenshot_service/README.md)

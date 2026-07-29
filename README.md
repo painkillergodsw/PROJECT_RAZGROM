@@ -14,12 +14,14 @@
 
 >### Архитектура
 Система состоит из микро-сервисной архитектуры:
-1. [Api Gateway (krakenD) ](app/services/kraken_d/README.md)
+1. [Api Gateway (krakenD)](app/services/kraken_d/README.md)
+3. [Self hosted S3 (minio)](app/services/docker-compose.yaml#269)
 2. [Основной сервис-контроллер (core_service)](app/services/core_service/README.md)
 3. [Сервис работы с пользователями (auth_service)](app/services/auth_service/README.md)
-4. [Сервис обертка над naabu для поиска открытых портов (naabu_service)](app/services/naabu_service/README.md)
-5. [Сервис обертка над feroxbuster для сбора страниц (feroxbuster_service)](app/services/feroxbuster_service/README.md)
-6. [Сервис обертка над dnsx для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
-7. [Сервис обертка над subfiender для пассивного поиска поддоменов (subfinder_service)](app/services/subfinder_service/README.md)
-8. [Сервис обертка над nmap для поиска открытых портов и анализа сервисов на них (nmap_service)](app/services/nmap_service/README.md)
-9. [Сервис обертка над katana для поиска ресурсов на домене: страницы/файлы/js/css и тд (katana_service)](app/services/katana_service/README.md)
+4. [Сервис сбора скриншотов страниц (screenshot_service)](app/services/screenshot_service/README.md)
+5. [Сервис обертка над naabu для поиска открытых портов (naabu_service)](app/services/naabu_service/README.md)
+6. [Сервис обертка над feroxbuster для сбора страниц (feroxbuster_service)](app/services/feroxbuster_service/README.md)
+7. [Сервис обертка над dnsx для активного поиска поддоменов (dnsx_service)](app/services/dnsx_service/README.md)
+8. [Сервис обертка над subfiender для пассивного поиска поддоменов (subfinder_service)](app/services/subfinder_service/README.md)
+9. [Сервис обертка над nmap для поиска открытых портов и анализа сервисов на них (nmap_service)](app/services/nmap_service/README.md)
+10. [Сервис обертка над katana для поиска ресурсов на домене: страницы/файлы/js/css и тд (katana_service)](app/services/katana_service/README.md)

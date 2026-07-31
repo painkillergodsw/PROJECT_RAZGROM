@@ -87,7 +87,7 @@ services:
       dockerfile: screenshoot_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://screenshoot_service:10000/naabu/health_check" ]
+        [ "CMD", "curl", "-f", "http://screenshoot_service:10000/screenshoot/health_check" ]
       interval: 60s
       retries: 5
   

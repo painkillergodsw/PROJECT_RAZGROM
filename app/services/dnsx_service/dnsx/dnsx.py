@@ -1,11 +1,9 @@
 import asyncio
-import os
-import subprocess
+import tldextract
 
-import tempfile
 from pathlib import Path
 from collections import defaultdict
-import tldextract
+from common.tempfiles import TempSubDomainsFile
 
 CUR_DIR = Path(__file__).resolve().parent
 binary_path = CUR_DIR / "dnsx"
@@ -17,7 +15,7 @@ class SDK:
         if not sub_parts:
             sub_parts = self.__get_default_sub_parts(wordlist_path)
 
-        with TempDomainsFile(domains, sub_parts) as domains_file:
+        with TempSubDomainsFile(domains, sub_parts) as domains_file:
             process = await asyncio.create_subprocess_exec(
                 binary_path, "-l", domains_file,
                 stdout=asyncio.subprocess.PIPE,
@@ -59,23 +57,3 @@ class SDK:
             ].append(f"{sub_d_info.subdomain}.{sub_d_info.domain}.{sub_d_info.suffix}")
 
         return dict(result)
-
-
-class TempDomainsFile:
-    def __init__(self, domains: list[str], sub_parts: list[str]):
-        self.domains = domains
-        self.sub_parts = sub_parts
-
-    def __enter__(self):
-        with tempfile.NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as f:
-            self.filepath = f.name
-
-            for domain in self.domains:
-                for sub_part in self.sub_parts:
-                    f.write(f"{sub_part}.{domain}\n")
-
-        return self.filepath
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.filepath and os.path.exists(self.filepath):
-            os.remove(self.filepath)

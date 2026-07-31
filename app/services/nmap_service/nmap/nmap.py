@@ -3,15 +3,15 @@ import os
 import tempfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
-
+from common.tempfiles import TempListFile, NamedTemporaryFileWDelayedRemove
 CUR_DIR = Path(__file__).resolve().parent
 binary_path = CUR_DIR / "nmap"
 
 
 class SDK:
     async def scan_ports(self, assets: list[str]):
-        with TempDomainsFile(assets) as domains_file, \
-            TempResultFile() as result_file:
+        with TempListFile(assets) as domains_file, \
+            NamedTemporaryFileWDelayedRemove(suffix=".xml") as result_file:
 
             process = await asyncio.create_subprocess_exec(
                 binary_path,
@@ -20,7 +20,7 @@ class SDK:
                 "-p-",
                 "-sS",
                 "-oX",
-                result_file,
+                result_file.name,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -33,12 +33,12 @@ class SDK:
                 print(f"Ошибка сканирования доменов {assets}: {stderr}")
                 return {}
 
-            with open(result_file, encoding="utf-8") as f:
+            with open(result_file.name, encoding="utf-8") as f:
                 return self.__prepare_result(f.read(), self.__prepare_result_scan_ports)
             
 
     async def scan_service(self, domain: str, ports: list[int]):
-        with TempResultFile() as result_file:
+        with NamedTemporaryFileWDelayedRemove(suffix=".xml") as result_file:
             process = await asyncio.create_subprocess_exec(
                 binary_path,
                 "-Pn",
@@ -47,7 +47,7 @@ class SDK:
                 "-p",
                 ",".join(map(str, ports)),
                 "-oX",
-                 result_file,
+                result_file.name,
                 domain,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
@@ -61,7 +61,7 @@ class SDK:
                 print(f"Ошибка сканирования ассета {domain}:{ports}: {stderr}")
                 return {}
 
-            with open(result_file, encoding="utf-8") as f:
+            with open(result_file.name, encoding="utf-8") as f:
                 return self.__prepare_result(f.read(), self.__prepare_result_scan_service)
 
     @staticmethod
@@ -157,33 +157,4 @@ class SDK:
 
         return result
 
-class TempDomainsFile:
-    def __init__(self, domains: list[str]):
-        self.domains = domains
-
-    def __enter__(self):
-        with tempfile.NamedTemporaryFile(mode="w", delete=False, encoding="utf-8") as f:
-            self.filepath = f.name
-
-            for domain in self.domains:
-                f.write(f"{domain}\n")
-
-        return self.filepath
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.filepath and os.path.exists(self.filepath):
-            os.remove(self.filepath)
-
-class TempResultFile:
-    def __init__(self):
-        self.filepath = None
-
-    def __enter__(self):
-        fd, self.filepath = tempfile.mkstemp(suffix=".xml")
-        os.close(fd)
-        return self.filepath
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.filepath and os.path.exists(self.filepath):
-            os.remove(self.filepath)
 

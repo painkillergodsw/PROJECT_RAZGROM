@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/nmap")
+router = APIRouter(prefix="/screenshoot")
 
 @router.get("/health_check")
 async def health_check() -> dict:

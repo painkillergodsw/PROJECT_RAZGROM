@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import String, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db.base import Base
+from common.db.base import Base
 from db_managers import (
     UserManager,
     RoleManager,

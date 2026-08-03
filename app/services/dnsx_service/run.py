@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from common.producer import BaseProducer
+from common.kafka.producer import BaseProducer
 from consumer import create_topics, consume
 from fastapi import FastAPI
 from views import router

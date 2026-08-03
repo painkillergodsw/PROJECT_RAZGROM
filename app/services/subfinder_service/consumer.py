@@ -1,5 +1,5 @@
 from config import config
-from common.consumer import base_create_topics, base_consume
+from common.kafka.consumer import base_create_topics, base_consume
 from subfinder.tasks import scan_domains
 
 async def create_topics():

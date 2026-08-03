@@ -18,7 +18,7 @@ from schemas import (
 )
 from models import User
 from utils import check_password, check_access_revoked
-from db.dep.depends import get_session
+from common.db.dep.depends import get_session
 from schemas import LogOutSchema
 from utils import try_validate_refresh, try_validate_access
 

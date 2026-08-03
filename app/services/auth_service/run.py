@@ -3,12 +3,11 @@ from fastapi import FastAPI
 from views import router
 from contextlib import asynccontextmanager
 from models import Role
-from db.db import async_session_maker
+from common.db.db import async_session_maker
 from config import config
 import redis.asyncio as redis
 from redis.exceptions import ConnectionError
 from logger import logger as l
-from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager

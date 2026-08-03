@@ -19,8 +19,10 @@ RUN openssl genrsa -out certs/private.pem 2048 && \
     openssl rsa -in certs/private.pem -outform PEM -pubout -out certs/public.pem
 
 RUN poetry config virtualenvs.create false
-COPY pyproject.toml poetry.lock ./
-COPY . .
+COPY auth_service/pyproject.toml auth_service/poetry.lock ./
+COPY auth_service/ ./
+COPY common/ ./common/
+
 
 RUN poetry install --no-root
 

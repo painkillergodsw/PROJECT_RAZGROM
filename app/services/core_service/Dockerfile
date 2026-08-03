@@ -11,8 +11,10 @@ RUN apt-get update && \
     apt-get install -y curl && \
     apt-get install -y netcat-openbsd
 
-COPY pyproject.toml poetry.lock ./
-COPY . .
+COPY core_service/pyproject.toml core_service/poetry.lock ./
+COPY core_service/ ./
+COPY common/ ./common/
+
 
 RUN poetry install --no-root
 

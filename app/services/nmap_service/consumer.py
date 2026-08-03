@@ -1,6 +1,8 @@
+import asyncio
+
 from nmap.tasks import scan_ports, scan_services
 from config import config
-from common.consumer import base_create_topics, base_consume
+from common.kafka.consumer import base_create_topics, base_consume
 
 async def create_topics():
     await base_create_topics(config, topics=[
@@ -31,12 +33,10 @@ async def handle_msg(producer, msg):
 
         elif msg.topic == config.kafka.CONSUME_SERVICE_SCAN_T:
 
-            scan_result = [scan_services(a.get("domain"),a.get("ports")) for a in msg.value["asets"]]
-            for asset in msg.value["assets"]:
-                domain = asset.get("domain")
-                ports = asset.get("ports")
-                scan_result  = await scan_services(domain, ports)
-                await producer.send(config.kafka.PRODUCE_SERVICE_SCAN_T, scan_result, msg.key)
+            scan_task = [scan_services(a.get("domain"),a.get("ports")) for a in msg.value["assets"]]
+            results = await asyncio.gather(*scan_task)
+
+            await producer.send(config.kafka.PRODUCE_SERVICE_SCAN_T, results, msg.key)
 
     except Exception as e:
         print(str(e))

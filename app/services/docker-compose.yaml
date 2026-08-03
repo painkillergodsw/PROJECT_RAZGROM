@@ -12,7 +12,7 @@ services:
       dockerfile: dnsx_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://dnsx_service:8231/dnsx/health_check" ]
+        [ "CMD", "curl", "-f", "http://dnsx_service:8231/health_check" ]
       interval: 60s
       retries: 5
 
@@ -29,7 +29,7 @@ services:
       dockerfile: subfinder_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://subfinder_service:8230/subfinder/health_check" ]
+        [ "CMD", "curl", "-f", "http://subfinder_service:8230/health_check" ]
       interval: 60s
       retries: 5
 
@@ -46,7 +46,7 @@ services:
       dockerfile: feroxbuster_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://feroxbuster_service:8232/feroxbuster/health_check" ]
+        [ "CMD", "curl", "-f", "http://feroxbuster_service:8232/health_check" ]
       interval: 60s
       retries: 5
 
@@ -66,7 +66,7 @@ services:
       dockerfile: naabu_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://naabu_service:8337/naabu/health_check" ]
+        [ "CMD", "curl", "-f", "http://naabu_service:8337/health_check" ]
       interval: 60s
       retries: 5
 
@@ -87,7 +87,7 @@ services:
       dockerfile: screenshoot_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://screenshoot_service:10000/naabu/health_check" ]
+        [ "CMD", "curl", "-f", "http://screenshoot_service:10000/health_check" ]
       interval: 60s
       retries: 5
   
@@ -108,7 +108,24 @@ services:
       dockerfile: nmap_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://nmap_service:9001/nmap/health_check" ]
+        [ "CMD", "curl", "-f", "http://nmap_service:9001/health_check" ]
+      interval: 60s
+      retries: 5
+      
+  httpx_service:
+    container_name: httpx_service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: httpx_service/Dockerfile
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://httpx_service:10010/health_check" ]
       interval: 60s
       retries: 5
 
@@ -125,7 +142,7 @@ services:
       dockerfile: katana_service/Dockerfile
     healthcheck:
       test:
-        [ "CMD", "curl", "-f", "http://katana_service:9002/katana/health_check" ]
+        [ "CMD", "curl", "-f", "http://katana_service:9002/health_check" ]
       interval: 60s
       retries: 5
 
@@ -189,8 +206,8 @@ services:
   auth_service:
     container_name: auth_service
     build:
-      context: auth_service/
-      dockerfile: ./Dockerfile
+      context: . 
+      dockerfile: auth_service/Dockerfile
 
     depends_on:
       db_auth_service:
@@ -229,8 +246,8 @@ services:
   core_service:
     container_name: core_service
     build:
-      context: core_service/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: core_service/Dockerfile
     depends_on:
       db_core_service:
         condition: service_healthy
@@ -254,6 +271,9 @@ services:
     depends_on:
       auth_service:
         condition: service_healthy
+      core_service:
+        condition: service_healthy
+      
     ports:
       - "8080:8080"
     networks:
@@ -273,8 +293,8 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9000:9000" # debug
+      - "9001:9001" # debug
     volumes:
       - minio_data:/data
     networks:

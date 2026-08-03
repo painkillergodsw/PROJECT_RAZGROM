@@ -2,7 +2,7 @@ import asyncio
 
 from katana.tasks import scan_domain
 from config import config
-from common.consumer import base_create_topics, base_consume
+from common.kafka.consumer import base_create_topics, base_consume
 
 async def create_topics():
     await base_create_topics(config)

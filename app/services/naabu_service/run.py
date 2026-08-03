@@ -1,7 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 from consumer import consume, create_topics
-from common.producer import BaseProducer
+from common.kafka.producer import BaseProducer
 import uvicorn
 from fastapi import FastAPI
 from views import router

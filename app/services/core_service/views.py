@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Body
 from HTTPExceptions import project_not_exists
 from schemas import ProjectSchema, MainDomainSchema, ProjectsSchema
 from models import Project, MainDomain
-from db.dep.depends import get_session
+from common.db.dep.depends import get_session
 from schemas import UserSchema, CreateProject
 from depends import get_user
 

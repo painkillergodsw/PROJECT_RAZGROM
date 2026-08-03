@@ -2,7 +2,7 @@ from sqlalchemy import String, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db_managers import ProjectManager, MainDomainManager
-from db.base import Base
+from common.db.base import Base
 
 
 class Project(Base):

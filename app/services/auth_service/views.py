@@ -15,7 +15,7 @@ from schemas import (
     PubKeySchema,
 )
 
-from db.dep.depends import get_session
+from common.db.dep.depends import get_session
 from models import User
 from HTTPExceptions import UserAlreadyExistsHTTPException
 from depends import (

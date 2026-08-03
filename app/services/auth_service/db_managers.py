@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from db.managers import BaseManager
+from common.db.managers import BaseManager
 
 
 class UserManager(BaseManager):

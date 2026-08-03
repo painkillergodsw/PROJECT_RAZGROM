@@ -111,6 +111,23 @@ services:
         [ "CMD", "curl", "-f", "http://nmap_service:9001/health_check" ]
       interval: 60s
       retries: 5
+      
+  httpx_service:
+    container_name: httpx_service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: httpx_service/Dockerfile
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://httpx_service:10010/health_check" ]
+      interval: 60s
+      retries: 5
 
   katana_service:
     container_name: katana_service
@@ -189,8 +206,8 @@ services:
   auth_service:
     container_name: auth_service
     build:
-      context: auth_service/
-      dockerfile: ./Dockerfile
+      context: . 
+      dockerfile: auth_service/Dockerfile
 
     depends_on:
       db_auth_service:
@@ -229,8 +246,8 @@ services:
   core_service:
     container_name: core_service
     build:
-      context: core_service/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: core_service/Dockerfile
     depends_on:
       db_core_service:
         condition: service_healthy

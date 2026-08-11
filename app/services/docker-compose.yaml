@@ -9,7 +9,7 @@ services:
       - app
     build:
       context: .
-      dockerfile: dnsx_service/Dockerfile
+      dockerfile: dast/dnsx_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://dnsx_service:8231/health_check" ]
@@ -26,7 +26,7 @@ services:
       - app
     build:
       context: .
-      dockerfile: subfinder_service/Dockerfile
+      dockerfile: dast/subfinder_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://subfinder_service:8230/health_check" ]
@@ -43,7 +43,7 @@ services:
       - app
     build:
       context: .
-      dockerfile: feroxbuster_service/Dockerfile
+      dockerfile: dast/feroxbuster_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://feroxbuster_service:8232/health_check" ]
@@ -63,7 +63,7 @@ services:
       - app
     build:
       context: .
-      dockerfile: naabu_service/Dockerfile
+      dockerfile: dast/naabu_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://naabu_service:8337/health_check" ]
@@ -84,7 +84,7 @@ services:
       - app
     build:
       context: .
-      dockerfile: screenshoot_service/Dockerfile
+      dockerfile: dast/screenshoot_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://screenshoot_service:10000/health_check" ]
@@ -105,7 +105,7 @@ services:
       - app
     build:
       context: .
-      dockerfile: nmap_service/Dockerfile
+      dockerfile: dast/nmap_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://nmap_service:9001/health_check" ]
@@ -122,10 +122,27 @@ services:
       - app
     build:
       context: .
-      dockerfile: httpx_service/Dockerfile
+      dockerfile: dast/httpx_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://httpx_service:10010/health_check" ]
+      interval: 60s
+      retries: 5
+
+  nuclei_service:
+    container_name: nuclei_service
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+    build:
+      context: .
+      dockerfile: dast/nuclei_service/Dockerfile
+    healthcheck:
+      test:
+        [ "CMD", "curl", "-f", "http://nuclei_service:10013/health_check"]
       interval: 60s
       retries: 5
 
@@ -139,7 +156,7 @@ services:
       - app
     build:
       context: .
-      dockerfile: katana_service/Dockerfile
+      dockerfile: dast/katana_service/Dockerfile
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "http://katana_service:9002/health_check" ]
